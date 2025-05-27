@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Exe201BeestayBeApplication {
+public class Exe201BeeStayBeApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Exe201BeestayBeApplication.class, args);
+		SpringApplication.run(Exe201BeeStayBeApplication.class, args);
 	}
 
 }
