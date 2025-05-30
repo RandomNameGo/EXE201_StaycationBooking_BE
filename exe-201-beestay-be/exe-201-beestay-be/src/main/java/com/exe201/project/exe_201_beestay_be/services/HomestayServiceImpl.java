@@ -23,7 +23,7 @@ public class HomestayServiceImpl implements HomestayService {
 
     @Override
     public List<StayCationDetailResponse> getAllRoomDetails() {
-        List<StayCationDetailResponse> stayCationDetailRespons = new ArrayList<>();
+        List<StayCationDetailResponse> stayCationDetailResponses = new ArrayList<>();
         List<Homestay> homestays = homestayRepository.findAll();
         for (Homestay homestay : homestays) {
             StayCationDetailResponse stayCationDetailResponse = new StayCationDetailResponse();
@@ -129,8 +129,8 @@ public class HomestayServiceImpl implements HomestayService {
             }
             stayCationDetailResponse.setReviews(reviewResponses);
             stayCationDetailResponse.setReviewCount(reviewRepository.countByHomestayId(homestay.getId()));
-            stayCationDetailRespons.add(stayCationDetailResponse);
+            stayCationDetailResponses.add(stayCationDetailResponse);
         }
-        return stayCationDetailRespons;
+        return stayCationDetailResponses;
     }
 }
