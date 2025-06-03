@@ -25,6 +25,7 @@ jobs:
           distribution: 'microsoft'
 
       - name: Build with Maven
+        working-directory: ./EXE201_StaycationBooking_BE
         run: mvn clean install
 
       - name: Upload artifact for deployment job
