@@ -1,11 +1,16 @@
 package com.exe201.project.exe_201_beestay_be.services;
 
+import com.exe201.project.exe_201_beestay_be.dto.requests.StayCationCreateRequest;
 import com.exe201.project.exe_201_beestay_be.dto.responses.*;
+import com.exe201.project.exe_201_beestay_be.exceptions.StayCationNotFoundException;
 import com.exe201.project.exe_201_beestay_be.models.*;
 import com.exe201.project.exe_201_beestay_be.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +25,8 @@ public class HomestayServiceImpl implements HomestayService {
     private final HomestayAmenityRepository amenityRepository;
     private final HomestayAvailableDateRepository availableDateRepository;
     private final ReviewRepository reviewRepository;
+    private final HostRepository hostRepository;
+    private final CloudinaryService cloudinaryService;
 
     @Override
     public List<StayCationDetailResponse> getAllRoomDetails() {
@@ -133,4 +140,112 @@ public class HomestayServiceImpl implements HomestayService {
         }
         return stayCationDetailResponses;
     }
+
+    @Override
+    public String addStayCation(StayCationCreateRequest request) {
+
+        Homestay homestay = new Homestay();
+
+        int id = request.getHostId();
+
+        Host host = hostRepository.findById(request.getHostId())
+                .orElseThrow(() -> new RuntimeException("Host not found with ID: " + request.getHostId()));
+        homestay.setHost(host);
+
+        homestay.setName(request.getName());
+
+        homestay.setAverageRating(0f);
+
+        homestay.setReviewCount(0);
+
+        homestay.setAddress(request.getLocation().getAddress());
+        homestay.setDistrict(request.getLocation().getDistrict());
+        homestay.setCity(request.getLocation().getCity());
+        homestay.setProvince(request.getLocation().getProvince());
+
+        homestay.setPricePerNight(request.getPricePerNight());
+        homestay.setOriginalPricePerNight(request.getOriginalPricePerNight());
+        homestay.setDiscountPercentage(request.getDiscountPercentage());
+
+        homestay.setVideoTourUrl(request.getVideoTourUrl());
+        homestay.setDescription(request.getDescription());
+
+        homestay.setRoomType(request.getRoomType());
+        homestay.setRoomCount(request.getRoomCount());
+        homestay.setMaxGuests(request.getMaxGuests());
+        homestay.setBedCount(request.getBedCount());
+        homestay.setBathroomCount(request.getBathroomCount());
+
+        homestay.setIsFlashSale(false);
+        homestay.setIsAvailable(true);
+        homestay.setIsInstantBook(true);
+        homestay.setIsRecommended(false);
+
+        homestay.setDistanceToCenter(request.getDistanceToCenter());
+
+        homestayRepository.save(homestay);
+
+        Homestay tempHomestay = homestayRepository.findTopByOrderByIdDesc();
+        HomestayAmenity amenities = new HomestayAmenity();
+
+        amenities.setHomestay(tempHomestay);
+
+        amenities.setWifi(request.getAmenities().isWifi());
+        amenities.setAirConditioner(request.getAmenities().isAirConditioner());
+        amenities.setKitchen(request.getAmenities().isKitchen());
+        amenities.setPrivateBathroom(request.getAmenities().isPrivateBathroom());
+        amenities.setPool(request.getAmenities().isPool());
+        amenities.setPetAllowed(request.getAmenities().isPetAllowed());
+        amenities.setParking(request.getAmenities().isParking());
+        amenities.setBalcony(request.getAmenities().isBalcony());
+        amenities.setBbqArea(request.getAmenities().isBbqArea());
+        amenities.setRoomService(request.getAmenities().isRoomService());
+        amenities.setSecurityCamera(request.getAmenities().isSecurityCamera());
+
+        amenityRepository.save(amenities);
+
+        for (String homestayFeature : request.getFeatures()){
+            HomestayFeature tempHomestayFeature = new HomestayFeature();
+            tempHomestayFeature.setHomestay(tempHomestay);
+            tempHomestayFeature.setFeatureName(homestayFeature);
+            featureRepository.save(tempHomestayFeature);
+        }
+
+        for (LocalDate availableDate : request.getAvailableDates()){
+            HomestayAvailableDate tempHomestayAvailableDate = new HomestayAvailableDate();
+            tempHomestayAvailableDate.setHomestay(tempHomestay);
+            tempHomestayAvailableDate.setAvailableDate(availableDate);
+            availableDateRepository.save(tempHomestayAvailableDate);
+        }
+
+        HomestayPolicy policy = new HomestayPolicy();
+
+        policy.setHomestay(homestay);
+        policy.setIsRefundable(request.getPolicies().isRefundable());
+        policy.setAllowPet(request.getPolicies().isAllowPet());
+        policy.setAllowSmoking(request.getPolicies().isAllowSmoking());
+        policyRepository.save(policy);
+
+        return "Add StayCation Successfully";
+    }
+
+    @Override
+    public String uploadHomestayImage(List<MultipartFile> files, int homeStayId) throws IOException {
+
+        if(!homestayRepository.existsById(homeStayId)){
+            throw new StayCationNotFoundException("Stay Cation Not Found");
+        }
+
+        Homestay homestay = homestayRepository.findById(homeStayId).get();
+
+        for (MultipartFile file : files){
+            String imgUrl = cloudinaryService.uploadFile(file);
+            HomestayImage homestayImage = new HomestayImage();
+            homestayImage.setHomestay(homestay);
+            homestayImage.setUrl(imgUrl);
+            imageRepository.save(homestayImage);
+        }
+        return "";
+    }
+
 }

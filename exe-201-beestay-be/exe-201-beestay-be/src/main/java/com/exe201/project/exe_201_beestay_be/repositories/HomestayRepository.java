@@ -10,4 +10,7 @@ public interface HomestayRepository extends JpaRepository<Homestay, Integer> {
 
     @Query("select h.id from Homestay h where h.host.id = :hostId")
     List<Integer> findByHostId(int hostId);
+
+    Homestay findTopByOrderByIdDesc();
+
 }
