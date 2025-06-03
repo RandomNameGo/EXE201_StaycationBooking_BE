@@ -25,7 +25,7 @@ jobs:
           distribution: 'microsoft'
 
       - name: Build with Maven
-        working-directory: ./EXE201_StaycationBooking_BE
+        working-directory: exe-201-beestay-be/exe-201-beestay-be
         run: mvn clean install
 
       - name: Upload artifact for deployment job
