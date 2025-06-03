@@ -25,7 +25,6 @@ jobs:
           distribution: 'microsoft'
 
       - name: Build with Maven
-        working-directory: exe-201-beestay-be\exe-201-beestay-be
         run: mvn clean install
 
       - name: Upload artifact for deployment job
@@ -53,9 +52,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_8789CF4E19154069814784DCC387B196 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_57E85EAD2DFF42BEA7F23194531E6498 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_CA0BA51986974AA19FEB6653B4DF2125 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_40E3F5C4743C4C318C0EE2DA8D2FE56F }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6FBA062C8359487AA5D6C9542D5962F4 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_7BB418FA1F00436D9C0065AAE3BF02F1 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
