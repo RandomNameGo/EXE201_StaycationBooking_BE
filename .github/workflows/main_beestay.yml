@@ -25,6 +25,7 @@ jobs:
           distribution: 'microsoft'
 
       - name: Build with Maven
+        working-directory: exe-201-beestay-be
         run: mvn clean install
 
       - name: Upload artifact for deployment job
