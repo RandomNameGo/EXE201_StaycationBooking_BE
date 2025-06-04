@@ -1,17 +1,14 @@
 package com.exe201.project.exe_201_beestay_be.controller;
 
 import com.exe201.project.exe_201_beestay_be.dto.requests.LoginRequest;
-import com.exe201.project.exe_201_beestay_be.dto.requests.RegisterAccountRequest;
 import com.exe201.project.exe_201_beestay_be.dto.requests.VerifyOtpRequest;
+import com.exe201.project.exe_201_beestay_be.exceptions.AccountNotValidException;
 import com.exe201.project.exe_201_beestay_be.services.AccountService;
 import com.exe201.project.exe_201_beestay_be.services.EmailService;
 import com.exe201.project.exe_201_beestay_be.services.OtpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,10 +22,10 @@ public class AuthController {
     private final EmailService emailService;
 
     @PostMapping("/auth/register")
-    public ResponseEntity<?> register(@RequestBody RegisterAccountRequest request) {
+    public ResponseEntity<?> register(@RequestParam("email") String email) {
 
-            String otp = otpService.generateOtp(request.getEmail());
-            emailService.sendOtpEmail(request.getEmail(), otp);
+            String otp = otpService.generateOtp(email);
+            emailService.sendOtpEmail(email, otp);
             return ResponseEntity.ok("OTP has been sent to email. Please verify to complete registration.");
 
     }
@@ -48,10 +45,10 @@ public class AuthController {
 
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        try{
+        try {
             return ResponseEntity.ok().body(accountService.login(request.getUserName(), request.getPassword()));
-        } catch (Exception e){
-            return ResponseEntity.internalServerError().build();
+        } catch (AccountNotValidException e){
+            throw new AccountNotValidException("Account not valid");
         }
     }
 }

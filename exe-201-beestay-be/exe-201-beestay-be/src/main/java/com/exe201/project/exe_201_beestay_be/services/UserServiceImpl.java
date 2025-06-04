@@ -1,14 +1,14 @@
 package com.exe201.project.exe_201_beestay_be.services;
 
 import com.exe201.project.exe_201_beestay_be.dto.responses.UserDetailResponse;
+import com.exe201.project.exe_201_beestay_be.exceptions.UserNotFoundException;
 import com.exe201.project.exe_201_beestay_be.models.User;
-import com.exe201.project.exe_201_beestay_be.models.UserFavoriteHomestay;
 import com.exe201.project.exe_201_beestay_be.repositories.UserFavoriteHomestayRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+
 import java.util.Optional;
 
 @Service
@@ -23,6 +23,17 @@ public class UserServiceImpl implements UserService{
     public UserDetailResponse getUserDetails(int id) {
         UserDetailResponse userDetailResponse = new UserDetailResponse();
         Optional<User> user = userRepository.findById(id);
+        return getUserDetailResponse(userDetailResponse, user);
+    }
+
+    @Override
+    public UserDetailResponse getUserDetailsByAccount(int accountId) {
+        UserDetailResponse userDetailResponse = new UserDetailResponse();
+        Optional<User> user = userRepository.findByAccountId(accountId);
+        return getUserDetailResponse(userDetailResponse, user);
+    }
+
+    private UserDetailResponse getUserDetailResponse(UserDetailResponse userDetailResponse, Optional<User> user) {
         if(user.isPresent()) {
             userDetailResponse.setId(user.get().getId());
             userDetailResponse.setName(user.get().getName());
@@ -48,7 +59,7 @@ public class UserServiceImpl implements UserService{
             userDetailResponse.setVerified(user.get().getIsVerified());
 
         }else {
-            throw new RuntimeException("User not found");
+            throw new UserNotFoundException("User not found");
         }
         return userDetailResponse;
     }

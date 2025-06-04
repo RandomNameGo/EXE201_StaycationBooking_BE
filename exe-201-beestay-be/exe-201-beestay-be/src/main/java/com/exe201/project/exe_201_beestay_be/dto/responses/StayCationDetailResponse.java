@@ -13,7 +13,7 @@ public class StayCationDetailResponse {
     private LocationResponse location;
     private double distanceToCenter;
 
-    private double averageRating;
+    private float averageRating;
     private long reviewCount;
     private List<ReviewResponse> reviews;
 

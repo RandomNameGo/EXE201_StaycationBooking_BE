@@ -77,4 +77,8 @@ public class Host {
     @Column(name = "instagram")
     private String instagram;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
+
 }

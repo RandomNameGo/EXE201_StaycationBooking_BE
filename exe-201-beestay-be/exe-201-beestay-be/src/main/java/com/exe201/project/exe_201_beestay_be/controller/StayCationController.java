@@ -22,11 +22,8 @@ public class StayCationController {
 
     @GetMapping("/stay-cation/all")
     public ResponseEntity<List<StayCationDetailResponse>> getAll(){
-        try{
             return ResponseEntity.ok().body(homestayService.getAllRoomDetails());
-        }catch (Exception e){
-            return ResponseEntity.notFound().build();
-        }
+
     }
 
     @PostMapping("/stay-cation/add")

@@ -28,6 +28,17 @@ public class HostServiceImpl implements HostService{
     public HostDetailResponse getHostDetail(int id) {
         HostDetailResponse hostDetailResponse = new HostDetailResponse();
         Optional<Host> host = hostRepository.findById(id);
+        return getHostDetailResponse(hostDetailResponse, host);
+    }
+
+    @Override
+    public HostDetailResponse getHostDetailByAccountId(int accountId) {
+        HostDetailResponse hostDetailResponse = new HostDetailResponse();
+        Optional<Host> host = hostRepository.findByAccountId(accountId);
+        return getHostDetailResponse(hostDetailResponse, host);
+    }
+
+    private HostDetailResponse getHostDetailResponse(HostDetailResponse hostDetailResponse, Optional<Host> host) {
         if (host.isPresent()) {
 
             hostDetailResponse.setId(host.get().getId());

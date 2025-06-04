@@ -3,13 +3,20 @@ package com.exe201.project.exe_201_beestay_be.services;
 import com.exe201.project.exe_201_beestay_be.configurations.JwtUtil;
 import com.exe201.project.exe_201_beestay_be.dto.requests.RegisterAccountRequest;
 import com.exe201.project.exe_201_beestay_be.dto.requests.VerifyOtpRequest;
+import com.exe201.project.exe_201_beestay_be.dto.responses.LoginResponse;
 import com.exe201.project.exe_201_beestay_be.exceptions.AccountNotValidException;
 import com.exe201.project.exe_201_beestay_be.models.Account;
 import com.exe201.project.exe_201_beestay_be.models.Enums.Roles;
+import com.exe201.project.exe_201_beestay_be.models.Host;
+import com.exe201.project.exe_201_beestay_be.models.User;
 import com.exe201.project.exe_201_beestay_be.repositories.AccountRepository;
+import com.exe201.project.exe_201_beestay_be.repositories.HostRepository;
+import com.exe201.project.exe_201_beestay_be.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -21,16 +28,24 @@ public class AccountServiceImpl implements AccountService{
 
     private final JwtUtil jwtUtil;
 
+    private final UserRepository userRepository;
+
+    private final HostRepository hostRepository;
+
     @Override
-    public String login(String userName, String password) {
-        Account accountOptional = accountRepository.findByUserName(userName);
+    public LoginResponse login(String userName, String password) {
+        Account accountOptional = accountRepository.findByUserNameAndStatusIsTrue(userName);
 
         if(accountOptional==null || !accountOptional.getStatus()) {
             throw new AccountNotValidException("Account is not valid");
         }
 
         if (passwordEncoder.matches(password, accountOptional.getPassword())) {
-            return jwtUtil.generateToken(accountOptional.getUserName(), accountOptional.getRole());
+            LoginResponse loginResponse = new LoginResponse();
+            loginResponse.setAccountId(accountOptional.getId());
+            loginResponse.setUserName(accountOptional.getUserName());
+            loginResponse.setToken(jwtUtil.generateToken(accountOptional.getUserName(), accountOptional.getRole()));
+            return loginResponse;
         }
 
         return null;
@@ -50,6 +65,20 @@ public class AccountServiceImpl implements AccountService{
         account.setRole(Roles.valueOf(register.getRole()));
         account.setStatus(true);
         accountRepository.save(account);
+
+        Account tempAccount = accountRepository.findTopByOrderByIdDesc();
+
+        if(Objects.equals(register.getRole(), "USER")){
+            User user = new User();
+            user.setStatus("active");
+            user.setAccount(tempAccount);
+            userRepository.save(user);
+        } else if(Objects.equals(register.getRole(), "HOST")){
+            Host host = new Host();
+            host.setStatus("active");
+            host.setAccount(tempAccount);
+            hostRepository.save(host);
+        }
 
         return "Created Successfully";
     }

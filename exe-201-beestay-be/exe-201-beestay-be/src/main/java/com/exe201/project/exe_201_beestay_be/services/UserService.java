@@ -7,4 +7,6 @@ import java.util.List;
 public interface UserService {
 
     UserDetailResponse getUserDetails(int id);
+
+    UserDetailResponse getUserDetailsByAccount(int accountId);
 }
