@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/bees-tay/api/v1")
+@RequestMapping("/bee-stay/api/v1")
 @RequiredArgsConstructor
 public class HostController {
     private final HostService hostService;
