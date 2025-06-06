@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/bees-tay/api/v1")
+@RequestMapping("/bee-stay/api/v1")
 @RequiredArgsConstructor
 public class StayCationController {
 

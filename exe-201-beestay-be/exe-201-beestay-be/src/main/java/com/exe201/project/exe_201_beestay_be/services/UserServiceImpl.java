@@ -43,9 +43,7 @@ public class UserServiceImpl implements UserService{
             if (request.getName() != null && !request.getName().trim().isEmpty()) {
                 userDetails.setName(request.getName());
             }
-            if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
-                userDetails.setEmail(request.getEmail());
-            }
+
             if (request.getPhone() != null && !request.getPhone().trim().isEmpty()) {
                 userDetails.setPhone(request.getPhone());
             }

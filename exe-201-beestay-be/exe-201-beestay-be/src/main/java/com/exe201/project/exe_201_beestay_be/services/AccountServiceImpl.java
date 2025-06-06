@@ -77,6 +77,7 @@ public class AccountServiceImpl implements AccountService{
             user.setIsVerified(true);
             user.setCurrentBooking(0);
             user.setTotalBookingSuccess(0);
+            user.setEmail(register.getEmail());
             user.setJoinedDate(LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh")));
             userRepository.save(user);
         } else if(Objects.equals(register.getRole(), "HOST")){
