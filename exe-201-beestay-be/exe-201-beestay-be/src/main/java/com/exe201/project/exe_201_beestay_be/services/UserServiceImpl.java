@@ -1,5 +1,6 @@
 package com.exe201.project.exe_201_beestay_be.services;
 
+import com.exe201.project.exe_201_beestay_be.dto.requests.UpdateUserDetailRequest;
 import com.exe201.project.exe_201_beestay_be.dto.responses.UserDetailResponse;
 import com.exe201.project.exe_201_beestay_be.exceptions.UserNotFoundException;
 import com.exe201.project.exe_201_beestay_be.models.User;
@@ -31,6 +32,51 @@ public class UserServiceImpl implements UserService{
         UserDetailResponse userDetailResponse = new UserDetailResponse();
         Optional<User> user = userRepository.findByAccountId(accountId);
         return getUserDetailResponse(userDetailResponse, user);
+    }
+
+    @Override
+    public String updateUserDetails(UpdateUserDetailRequest request) {
+        Optional<User> user = userRepository.findById(request.getId());
+        if (user.isPresent()) {
+            User userDetails = user.get();
+
+            if (request.getName() != null && !request.getName().trim().isEmpty()) {
+                userDetails.setName(request.getName());
+            }
+            if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
+                userDetails.setEmail(request.getEmail());
+            }
+            if (request.getPhone() != null && !request.getPhone().trim().isEmpty()) {
+                userDetails.setPhone(request.getPhone());
+            }
+            if (request.getGender() != null) {
+                userDetails.setGender(request.getGender());
+            }
+            if (request.getBirthDate() != null) {
+                userDetails.setBirthDate(request.getBirthDate());
+            }
+
+            if (request.getAddressResponse() != null) {
+                if (request.getAddressResponse().getCity() != null && !request.getAddressResponse().getCity().trim().isEmpty()) {
+                    userDetails.setCity(request.getAddressResponse().getCity());
+                }
+                if (request.getAddressResponse().getDistrict() != null && !request.getAddressResponse().getDistrict().trim().isEmpty()) {
+                    userDetails.setDistrict(request.getAddressResponse().getDistrict());
+                }
+                if (request.getAddressResponse().getProvince() != null && !request.getAddressResponse().getProvince().trim().isEmpty()) {
+                    userDetails.setProvince(request.getAddressResponse().getProvince());
+                }
+                if (request.getAddressResponse().getStreet() != null && !request.getAddressResponse().getStreet().trim().isEmpty()) {
+                    userDetails.setStreet(request.getAddressResponse().getStreet());
+                }
+            }
+
+            userRepository.save(userDetails);
+        }
+        else {
+            throw new UserNotFoundException("User not found");
+        }
+        return "Updated user details successfully";
     }
 
     private UserDetailResponse getUserDetailResponse(UserDetailResponse userDetailResponse, Optional<User> user) {

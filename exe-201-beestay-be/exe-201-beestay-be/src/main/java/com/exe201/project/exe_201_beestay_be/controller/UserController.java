@@ -1,14 +1,11 @@
 package com.exe201.project.exe_201_beestay_be.controller;
 
+import com.exe201.project.exe_201_beestay_be.dto.requests.UpdateUserDetailRequest;
 import com.exe201.project.exe_201_beestay_be.exceptions.UserNotFoundException;
-import com.exe201.project.exe_201_beestay_be.models.User;
 import com.exe201.project.exe_201_beestay_be.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,6 +28,17 @@ public class UserController {
             return ResponseEntity.ok().body(userService.getUserDetailsByAccount(accountId));
         } catch (UserNotFoundException e) {
             throw new UserNotFoundException("User not found");
+        }
+    }
+
+    @PutMapping("/user/update")
+    public ResponseEntity<?> updateUser(@RequestBody UpdateUserDetailRequest request) {
+        try{
+            return ResponseEntity.ok().body(userService.updateUserDetails(request));
+        } catch (UserNotFoundException e) {
+            throw new UserNotFoundException("User not found");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

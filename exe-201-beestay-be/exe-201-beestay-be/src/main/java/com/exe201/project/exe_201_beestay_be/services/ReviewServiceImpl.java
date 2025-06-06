@@ -45,12 +45,13 @@ public class ReviewServiceImpl implements ReviewService {
         reviewToAdd.setReviewDate(review.getReviewDate());
         reviewRepository.save(reviewToAdd);
         calculateAverageRating(homestay.get());
+        countReview(user.get());
         return "Review added successfully";
 
     }
 
     private void calculateAverageRating(Homestay homestay) {
-        double averageRating = 0.0;
+        double averageRating;
         double sumRating = 0.0;
         long totalReviews = reviewRepository.countByHomestayId(homestay.getId());
         List<Review> reviews = reviewRepository.findByHomestayId(homestay.getId());
@@ -60,5 +61,14 @@ public class ReviewServiceImpl implements ReviewService {
 
         averageRating = sumRating / totalReviews;
         homestay.setAverageRating((float) averageRating);
+        homestayRepository.save(homestay);
+    }
+
+    private void countReview(User user){
+        int reviewCount;
+        long totalReviews = reviewRepository.countByUserId(user.getId());
+        reviewCount = (int) totalReviews;
+        user.setReviewCount(reviewCount);
+        userRepository.save(user);
     }
 }

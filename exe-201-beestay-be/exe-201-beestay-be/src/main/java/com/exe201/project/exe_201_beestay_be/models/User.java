@@ -86,11 +86,6 @@ public class User {
     private String providerId;
 
     @Size(max = 255)
-    @Column(name = "password")
-    private String password;
-
-
-    @Size(max = 255)
     @Column(name = "image")
     private String image;
 

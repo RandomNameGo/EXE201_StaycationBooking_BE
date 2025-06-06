@@ -13,5 +13,6 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     @Query("select count(r) from Review r where r.homestay.id = :id")
     long countByHomestayId(int id);
 
-
+    @Query("select count(r) from Review r where r.user.id = :id")
+    long countByUserId(int id);
 }

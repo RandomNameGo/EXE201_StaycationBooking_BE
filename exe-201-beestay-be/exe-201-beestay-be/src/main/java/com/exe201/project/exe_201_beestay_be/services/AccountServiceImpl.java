@@ -1,7 +1,6 @@
 package com.exe201.project.exe_201_beestay_be.services;
 
 import com.exe201.project.exe_201_beestay_be.configurations.JwtUtil;
-import com.exe201.project.exe_201_beestay_be.dto.requests.RegisterAccountRequest;
 import com.exe201.project.exe_201_beestay_be.dto.requests.VerifyOtpRequest;
 import com.exe201.project.exe_201_beestay_be.dto.responses.LoginResponse;
 import com.exe201.project.exe_201_beestay_be.exceptions.AccountNotValidException;
@@ -16,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Objects;
 
 @Service
@@ -72,11 +73,18 @@ public class AccountServiceImpl implements AccountService{
             User user = new User();
             user.setStatus("active");
             user.setAccount(tempAccount);
+            user.setReviewCount(0);
+            user.setIsVerified(true);
+            user.setCurrentBooking(0);
+            user.setTotalBookingSuccess(0);
+            user.setJoinedDate(LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh")));
             userRepository.save(user);
         } else if(Objects.equals(register.getRole(), "HOST")){
             Host host = new Host();
             host.setStatus("active");
             host.setAccount(tempAccount);
+            host.setTotalRooms(0);
+            host.setAverageRating(0f);
             hostRepository.save(host);
         }
 

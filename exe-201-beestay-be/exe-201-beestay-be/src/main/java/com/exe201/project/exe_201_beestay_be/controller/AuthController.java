@@ -21,7 +21,7 @@ public class AuthController {
 
     private final EmailService emailService;
 
-    @PostMapping("/auth/register")
+    @PostMapping("/auth/verify")
     public ResponseEntity<?> register(@RequestParam("email") String email) {
 
             String otp = otpService.generateOtp(email);
@@ -30,7 +30,7 @@ public class AuthController {
 
     }
 
-    @PostMapping("/auth/verify")
+    @PostMapping("/auth/register")
     public ResponseEntity<?> verify(@RequestBody VerifyOtpRequest request) {
         try{
             String message = "";
