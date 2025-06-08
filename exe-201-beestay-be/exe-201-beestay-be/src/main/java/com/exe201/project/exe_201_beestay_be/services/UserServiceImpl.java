@@ -8,8 +8,10 @@ import com.exe201.project.exe_201_beestay_be.repositories.UserFavoriteHomestayRe
 import com.exe201.project.exe_201_beestay_be.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -17,6 +19,8 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
+
+    private final CloudinaryService cloudinaryService;
 
     private final UserFavoriteHomestayRepository userFavoriteHomestayRepository;
 
@@ -36,7 +40,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public String updateUserDetails(UpdateUserDetailRequest request) {
-        Optional<User> user = userRepository.findById(request.getId());
+        Optional<User> user = userRepository.findById(request.getUserId());
         if (user.isPresent()) {
             User userDetails = user.get();
 
@@ -75,6 +79,19 @@ public class UserServiceImpl implements UserService{
             throw new UserNotFoundException("User not found");
         }
         return "Updated user details successfully";
+    }
+
+    @Override
+    public String updateUserAvatar(MultipartFile avatar, int userId) throws IOException {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isPresent()) {
+            User userDetails = user.get();
+            userDetails.setAvatar(cloudinaryService.uploadFile(avatar));
+            userRepository.save(userDetails);
+            return "Avatar updated successfully";
+        } else {
+            throw new UserNotFoundException("User not found");
+        }
     }
 
     private UserDetailResponse getUserDetailResponse(UserDetailResponse userDetailResponse, Optional<User> user) {

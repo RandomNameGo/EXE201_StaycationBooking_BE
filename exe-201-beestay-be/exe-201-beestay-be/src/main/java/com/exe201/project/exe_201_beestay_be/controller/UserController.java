@@ -6,6 +6,9 @@ import com.exe201.project.exe_201_beestay_be.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,6 +42,15 @@ public class UserController {
             throw new UserNotFoundException("User not found");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PutMapping("/user/update-avatar/{userId}")
+    public ResponseEntity<?> updateAvatar(@RequestParam("image") MultipartFile file, @PathVariable int userId) throws IOException {
+        try{
+            return ResponseEntity.ok().body(userService.updateUserAvatar(file, userId));
+        } catch (UserNotFoundException e) {
+            throw new UserNotFoundException("User not found");
         }
     }
 }

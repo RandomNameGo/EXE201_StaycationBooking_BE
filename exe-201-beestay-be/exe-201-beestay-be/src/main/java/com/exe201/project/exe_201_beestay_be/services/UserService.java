@@ -2,7 +2,9 @@ package com.exe201.project.exe_201_beestay_be.services;
 
 import com.exe201.project.exe_201_beestay_be.dto.requests.UpdateUserDetailRequest;
 import com.exe201.project.exe_201_beestay_be.dto.responses.UserDetailResponse;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
@@ -12,4 +14,6 @@ public interface UserService {
     UserDetailResponse getUserDetailsByAccount(int accountId);
 
     String updateUserDetails(UpdateUserDetailRequest request);
+
+    String updateUserAvatar(MultipartFile avatar, int userId) throws IOException;
 }

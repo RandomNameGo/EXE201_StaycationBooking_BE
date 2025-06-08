@@ -45,6 +45,7 @@ public class AccountServiceImpl implements AccountService{
             LoginResponse loginResponse = new LoginResponse();
             loginResponse.setAccountId(accountOptional.getId());
             loginResponse.setUserName(accountOptional.getUserName());
+            loginResponse.setRole(accountOptional.getRole().toString());
             loginResponse.setToken(jwtUtil.generateToken(accountOptional.getUserName(), accountOptional.getRole()));
             return loginResponse;
         }
@@ -86,6 +87,9 @@ public class AccountServiceImpl implements AccountService{
             host.setAccount(tempAccount);
             host.setTotalRooms(0);
             host.setAverageRating(0f);
+            host.setIsSuperHost(false);
+            host.setEmail(register.getEmail());
+            host.setJoinedDate(LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh")));
             hostRepository.save(host);
         }
 
