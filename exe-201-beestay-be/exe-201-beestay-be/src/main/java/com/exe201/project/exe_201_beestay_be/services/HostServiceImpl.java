@@ -46,7 +46,7 @@ public class HostServiceImpl implements HostService{
 
     @Override
     public String updateHostDetail(UpdateHostDetailRequest request) {
-        Optional<Host> host = hostRepository.findById(request.getHostId());
+        Optional<Host> host = hostRepository.findByAccountId(request.getAccountId());
         if (host.isPresent()) {
             Host hostDetail = host.get();
 
@@ -101,8 +101,8 @@ public class HostServiceImpl implements HostService{
     }
 
     @Override
-    public String updateAvatar(MultipartFile file, int hostId) throws IOException {
-        Optional<Host> host = hostRepository.findById(hostId);
+    public String updateAvatar(MultipartFile file, int accountId) throws IOException {
+        Optional<Host> host = hostRepository.findByAccountId(accountId);
         if (host.isPresent()) {
             Host hostDetails = host.get();
             hostDetails.setAvatar(cloudinaryService.uploadFile(file));

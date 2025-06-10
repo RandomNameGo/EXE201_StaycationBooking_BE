@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public String updateUserDetails(UpdateUserDetailRequest request) {
-        Optional<User> user = userRepository.findById(request.getUserId());
+        Optional<User> user = userRepository.findByAccountId(request.getAccountId());
         if (user.isPresent()) {
             User userDetails = user.get();
 
@@ -82,8 +82,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public String updateUserAvatar(MultipartFile avatar, int userId) throws IOException {
-        Optional<User> user = userRepository.findById(userId);
+    public String updateUserAvatar(MultipartFile avatar, int accountId) throws IOException {
+        Optional<User> user = userRepository.findByAccountId(accountId);
         if (user.isPresent()) {
             User userDetails = user.get();
             userDetails.setAvatar(cloudinaryService.uploadFile(avatar));

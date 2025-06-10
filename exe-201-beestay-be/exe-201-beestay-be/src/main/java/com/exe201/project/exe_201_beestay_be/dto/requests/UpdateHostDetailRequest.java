@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class UpdateHostDetailRequest {
 
-    private Integer hostId;
+    private Integer accountId;
     private String name;
     private String phone;
 

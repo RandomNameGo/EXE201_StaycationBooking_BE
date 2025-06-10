@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Data
 public class UpdateUserDetailRequest {
-    private int userId;
+    private Integer accountId;
     private String name;
     private String phone;
     private String gender;
