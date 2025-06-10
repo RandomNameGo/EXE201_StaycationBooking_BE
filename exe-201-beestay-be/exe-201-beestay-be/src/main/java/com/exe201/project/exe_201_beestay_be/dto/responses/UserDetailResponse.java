@@ -28,7 +28,7 @@ public class UserDetailResponse {
 
     @Data
     public static class AddressResponse {
-        private String street;
+        private String location;
         private String district;
         private String city;
         private String province;

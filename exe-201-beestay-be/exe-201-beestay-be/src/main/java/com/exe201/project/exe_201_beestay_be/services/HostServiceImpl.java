@@ -45,8 +45,8 @@ public class HostServiceImpl implements HostService{
     }
 
     @Override
-    public String updateHostDetail(UpdateHostDetailRequest request) {
-        Optional<Host> host = hostRepository.findByAccountId(request.getAccountId());
+    public String updateHostDetail(UpdateHostDetailRequest request, int accountId) {
+        Optional<Host> host = hostRepository.findByAccountId(accountId);
         if (host.isPresent()) {
             Host hostDetail = host.get();
 

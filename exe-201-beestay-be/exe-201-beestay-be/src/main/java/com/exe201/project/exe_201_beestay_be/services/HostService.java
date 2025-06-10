@@ -12,7 +12,7 @@ public interface HostService {
 
     HostDetailResponse getHostDetailByAccountId(int accountId);
 
-    String updateHostDetail(UpdateHostDetailRequest request);
+    String updateHostDetail(UpdateHostDetailRequest request, int accountId);
 
-    String updateAvatar(MultipartFile file, int hostId) throws IOException;
+    String updateAvatar(MultipartFile file, int accountId) throws IOException;
 }

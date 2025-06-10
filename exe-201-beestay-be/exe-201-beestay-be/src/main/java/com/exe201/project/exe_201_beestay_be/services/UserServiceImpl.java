@@ -39,8 +39,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public String updateUserDetails(UpdateUserDetailRequest request) {
-        Optional<User> user = userRepository.findByAccountId(request.getAccountId());
+    public String updateUserDetails(UpdateUserDetailRequest request, int accountId) {
+        Optional<User> user = userRepository.findByAccountId(accountId);
         if (user.isPresent()) {
             User userDetails = user.get();
 
@@ -68,8 +68,8 @@ public class UserServiceImpl implements UserService{
                 if (request.getAddressResponse().getProvince() != null && !request.getAddressResponse().getProvince().trim().isEmpty()) {
                     userDetails.setProvince(request.getAddressResponse().getProvince());
                 }
-                if (request.getAddressResponse().getStreet() != null && !request.getAddressResponse().getStreet().trim().isEmpty()) {
-                    userDetails.setStreet(request.getAddressResponse().getStreet());
+                if (request.getAddressResponse().getLocation() != null && !request.getAddressResponse().getLocation().trim().isEmpty()) {
+                    userDetails.setStreet(request.getAddressResponse().getLocation());
                 }
             }
 
@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService{
             userDetailResponse.setBirthDate(user.get().getBirthDate());
 
             UserDetailResponse.AddressResponse addressResponse = new UserDetailResponse.AddressResponse();
-            addressResponse.setStreet(user.get().getStreet());
+            addressResponse.setLocation(user.get().getStreet());
             addressResponse.setCity(user.get().getCity());
             addressResponse.setProvince(user.get().getProvince());
             addressResponse.setDistrict(user.get().getDistrict());

@@ -7,7 +7,6 @@ import java.time.LocalDate;
 
 @Data
 public class UpdateUserDetailRequest {
-    private Integer accountId;
     private String name;
     private String phone;
     private String gender;
@@ -17,7 +16,7 @@ public class UpdateUserDetailRequest {
 
     @Data
     public static class AddressResponse {
-        private String street;
+        private String location;
         private String district;
         private String city;
         private String province;

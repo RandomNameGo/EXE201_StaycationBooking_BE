@@ -33,10 +33,10 @@ public class HostController {
         }
     }
 
-    @PutMapping("/host/update")
-    public ResponseEntity<?> updateHostDetail(@RequestBody UpdateHostDetailRequest updateHostDetailRequest) {
+    @PutMapping("/host/update/{accountId}")
+    public ResponseEntity<?> updateHostDetail(@RequestBody UpdateHostDetailRequest updateHostDetailRequest, int accountId) {
         try {
-            return ResponseEntity.ok().body(hostService.updateHostDetail(updateHostDetailRequest));
+            return ResponseEntity.ok().body(hostService.updateHostDetail(updateHostDetailRequest, accountId));
         } catch (HostNotFoundException e){
             throw new HostNotFoundException(e.getMessage());
         } catch (Exception e){

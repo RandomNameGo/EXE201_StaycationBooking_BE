@@ -13,7 +13,7 @@ public interface UserService {
 
     UserDetailResponse getUserDetailsByAccount(int accountId);
 
-    String updateUserDetails(UpdateUserDetailRequest request);
+    String updateUserDetails(UpdateUserDetailRequest request, int accountId);
 
-    String updateUserAvatar(MultipartFile avatar, int userId) throws IOException;
+    String updateUserAvatar(MultipartFile avatar, int accountId) throws IOException;
 }

@@ -34,10 +34,10 @@ public class UserController {
         }
     }
 
-    @PutMapping("/user/update")
-    public ResponseEntity<?> updateUser(@RequestBody UpdateUserDetailRequest request) {
+    @PutMapping("/user/update/{accountId}")
+    public ResponseEntity<?> updateUser(@RequestBody UpdateUserDetailRequest request, @PathVariable int accountId) {
         try{
-            return ResponseEntity.ok().body(userService.updateUserDetails(request));
+            return ResponseEntity.ok().body(userService.updateUserDetails(request, accountId));
         } catch (UserNotFoundException e) {
             throw new UserNotFoundException("User not found");
         } catch (Exception e) {
@@ -45,10 +45,10 @@ public class UserController {
         }
     }
 
-    @PutMapping("/user/update-avatar/{userId}")
-    public ResponseEntity<?> updateAvatar(@RequestParam("image") MultipartFile file, @PathVariable int userId) throws IOException {
+    @PutMapping("/user/update-avatar/{accountId}")
+    public ResponseEntity<?> updateAvatar(@RequestParam("image") MultipartFile file, @PathVariable int accountId) throws IOException {
         try{
-            return ResponseEntity.ok().body(userService.updateUserAvatar(file, userId));
+            return ResponseEntity.ok().body(userService.updateUserAvatar(file, accountId));
         } catch (UserNotFoundException e) {
             throw new UserNotFoundException("User not found");
         }
