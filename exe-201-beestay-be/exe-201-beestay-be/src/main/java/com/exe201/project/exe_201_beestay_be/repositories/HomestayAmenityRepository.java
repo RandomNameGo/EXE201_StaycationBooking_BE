@@ -8,4 +8,5 @@ public interface HomestayAmenityRepository extends JpaRepository<HomestayAmenity
 
     @Query("select h from HomestayAmenity h where h.homestay.id = :id")
     HomestayAmenity findByHomestayId(int id);
+
 }

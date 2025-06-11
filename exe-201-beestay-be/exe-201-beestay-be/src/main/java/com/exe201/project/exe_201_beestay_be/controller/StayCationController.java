@@ -1,6 +1,7 @@
 package com.exe201.project.exe_201_beestay_be.controller;
 
 import com.exe201.project.exe_201_beestay_be.dto.requests.StayCationCreateRequest;
+import com.exe201.project.exe_201_beestay_be.dto.requests.StayCationUpdateRequest;
 import com.exe201.project.exe_201_beestay_be.exceptions.StayCationNotFoundException;
 import com.exe201.project.exe_201_beestay_be.services.HomestayService;
 import com.exe201.project.exe_201_beestay_be.dto.responses.StayCationDetailResponse;
@@ -41,6 +42,15 @@ public class StayCationController {
             return ResponseEntity.ok().body(homestayService.uploadHomestayImage(imageList, id));
         } catch (StayCationNotFoundException e){
             throw new StayCationNotFoundException(e.getMessage());
+        } catch (Exception e){
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/stay-cation/{homeStayId}")
+    public ResponseEntity<?> update(@PathVariable int homeStayId, @RequestBody StayCationUpdateRequest stayCationUpdateRequest){
+        try {
+            return ResponseEntity.ok().body(homestayService.updateStayCation(homeStayId, stayCationUpdateRequest));
         } catch (Exception e){
             return ResponseEntity.internalServerError().build();
         }

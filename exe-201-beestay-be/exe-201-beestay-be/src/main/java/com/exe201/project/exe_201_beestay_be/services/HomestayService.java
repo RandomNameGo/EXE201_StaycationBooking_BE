@@ -1,6 +1,7 @@
 package com.exe201.project.exe_201_beestay_be.services;
 
 import com.exe201.project.exe_201_beestay_be.dto.requests.StayCationCreateRequest;
+import com.exe201.project.exe_201_beestay_be.dto.requests.StayCationUpdateRequest;
 import com.exe201.project.exe_201_beestay_be.dto.responses.StayCationDetailResponse;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,4 +15,6 @@ public interface HomestayService {
     String addStayCation(StayCationCreateRequest stayCationCreateRequest);
 
     String uploadHomestayImage(List<MultipartFile> files, int homeStayId) throws IOException;
+
+    String updateStayCation(int homeStayId, StayCationUpdateRequest stayCationUpdateRequest);
 }

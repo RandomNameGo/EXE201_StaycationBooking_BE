@@ -1,6 +1,7 @@
 package com.exe201.project.exe_201_beestay_be.services;
 
 import com.exe201.project.exe_201_beestay_be.dto.requests.StayCationCreateRequest;
+import com.exe201.project.exe_201_beestay_be.dto.requests.StayCationUpdateRequest;
 import com.exe201.project.exe_201_beestay_be.dto.responses.*;
 import com.exe201.project.exe_201_beestay_be.exceptions.StayCationNotFoundException;
 import com.exe201.project.exe_201_beestay_be.models.*;
@@ -246,6 +247,97 @@ public class HomestayServiceImpl implements HomestayService {
             imageRepository.save(homestayImage);
         }
         return "";
+    }
+
+    @Override
+    public String updateStayCation(int homeStayId, StayCationUpdateRequest request) {
+        Homestay homestay = homestayRepository.findById(homeStayId)
+                .orElseThrow(() -> new RuntimeException("Homestay not found with ID: " + homeStayId));
+
+
+        if (request.getName() != null && !request.getName().isBlank()) homestay.setName(request.getName());
+        if (request.getLocation() != null) {
+            if (request.getLocation().getAddress() != null) homestay.setAddress(request.getLocation().getAddress());
+            if (request.getLocation().getDistrict() != null) homestay.setDistrict(request.getLocation().getDistrict());
+            if (request.getLocation().getCity() != null) homestay.setCity(request.getLocation().getCity());
+            if (request.getLocation().getProvince() != null) homestay.setProvince(request.getLocation().getProvince());
+        }
+
+        if (request.getPricePerNight() != null) homestay.setPricePerNight(request.getPricePerNight());
+        if (request.getOriginalPricePerNight() != null) homestay.setOriginalPricePerNight(request.getOriginalPricePerNight());
+        if (request.getDiscountPercentage() != null) homestay.setDiscountPercentage(request.getDiscountPercentage());
+        if (request.getVideoTourUrl() != null) homestay.setVideoTourUrl(request.getVideoTourUrl());
+        if (request.getDescription() != null) homestay.setDescription(request.getDescription());
+
+        if (request.getRoomType() != null) homestay.setRoomType(request.getRoomType());
+        if (request.getRoomCount() != null) homestay.setRoomCount(request.getRoomCount());
+        if (request.getMaxGuests() != null) homestay.setMaxGuests(request.getMaxGuests());
+        if (request.getBedCount() != null) homestay.setBedCount(request.getBedCount());
+        if (request.getBathroomCount() != null) homestay.setBathroomCount(request.getBathroomCount());
+
+        if (request.getIsFlashSale() != null) homestay.setIsFlashSale(request.getIsFlashSale());
+        if (request.getIsAvailable() != null) homestay.setIsAvailable(request.getIsAvailable());
+        if (request.getIsInstantBook() != null) homestay.setIsInstantBook(request.getIsInstantBook());
+        if (request.getIsRecommended() != null) homestay.setIsRecommended(request.getIsRecommended());
+
+        if (request.getDistanceToCenter() != null) homestay.setDistanceToCenter(request.getDistanceToCenter());
+
+        homestayRepository.save(homestay);
+
+        // Update amenities
+        HomestayAmenity amenities = amenityRepository.findByHomestayId(homeStayId);
+
+
+        if (request.getAmenities() != null) {
+            amenities.setWifi(request.getAmenities().isWifi());
+            amenities.setAirConditioner(request.getAmenities().isAirConditioner());
+            amenities.setKitchen(request.getAmenities().isKitchen());
+            amenities.setPrivateBathroom(request.getAmenities().isPrivateBathroom());
+            amenities.setPool(request.getAmenities().isPool());
+            amenities.setPetAllowed(request.getAmenities().isPetAllowed());
+            amenities.setParking(request.getAmenities().isParking());
+            amenities.setBalcony(request.getAmenities().isBalcony());
+            amenities.setBbqArea(request.getAmenities().isBbqArea());
+            amenities.setRoomService(request.getAmenities().isRoomService());
+            amenities.setSecurityCamera(request.getAmenities().isSecurityCamera());
+        }
+
+        amenityRepository.save(amenities);
+
+        if (request.getFeatures() != null && !request.getFeatures().isEmpty()) {
+            List<HomestayFeature> features = featureRepository.findHomestayFeatureByHomestayId(homeStayId);
+            featureRepository.deleteAll(features);
+            for (String feature : request.getFeatures()) {
+                HomestayFeature hf = new HomestayFeature();
+                hf.setHomestay(homestay);
+                hf.setFeatureName(feature);
+                featureRepository.save(hf);
+            }
+        }
+
+        if (request.getAvailableDates() != null && !request.getAvailableDates().isEmpty()) {
+            List<HomestayAvailableDate> homestayAvailableDates = availableDateRepository.findHomestayAvailableDateByHomestayId(homeStayId);
+            availableDateRepository.deleteAll(homestayAvailableDates);
+            for (LocalDate date : request.getAvailableDates()) {
+                HomestayAvailableDate had = new HomestayAvailableDate();
+                had.setHomestay(homestay);
+                had.setAvailableDate(date);
+                availableDateRepository.save(had);
+            }
+        }
+
+        HomestayPolicy policy = policyRepository.findByHomestayId(homeStayId);
+        policy.setHomestay(homestay);
+
+        if (request.getPolicies() != null) {
+            policy.setIsRefundable(request.getPolicies().isRefundable());
+            policy.setAllowPet(request.getPolicies().isAllowPet());
+            policy.setAllowSmoking(request.getPolicies().isAllowSmoking());
+        }
+
+        policyRepository.save(policy);
+
+        return "Update StayCation Successfully";
     }
 
 }

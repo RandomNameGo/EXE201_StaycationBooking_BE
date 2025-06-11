@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.Query;
 public interface HomestayPolicyRepository extends JpaRepository<HomestayPolicy, Integer> {
     @Query("select h from HomestayPolicy h where h.homestay.id = :id")
     HomestayPolicy findByHomestayId(int id);
+
 }

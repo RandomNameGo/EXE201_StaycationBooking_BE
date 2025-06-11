@@ -8,4 +8,5 @@ public class LoginResponse {
     private String userName;
     private String role;
     private String token;
+    private String refreshToken;
 }

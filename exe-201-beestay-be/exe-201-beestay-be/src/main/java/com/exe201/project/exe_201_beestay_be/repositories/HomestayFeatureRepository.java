@@ -10,4 +10,8 @@ public interface HomestayFeatureRepository extends JpaRepository<HomestayFeature
 
     @Query("select h.featureName from HomestayFeature h where h.homestay.id = :id")
     List<String> findByHomestayId(int id);
+
+    @Query("select h from HomestayFeature h where h.homestay.id = :id")
+    List<HomestayFeature> findHomestayFeatureByHomestayId(int id);
+
 }

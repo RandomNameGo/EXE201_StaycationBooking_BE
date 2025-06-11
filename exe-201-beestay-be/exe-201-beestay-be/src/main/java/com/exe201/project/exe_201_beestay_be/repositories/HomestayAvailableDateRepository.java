@@ -11,4 +11,7 @@ public interface HomestayAvailableDateRepository extends JpaRepository<HomestayA
 
     @Query("select h.availableDate from HomestayAvailableDate h where h.homestay.id = :id")
     List<LocalDate> findByHomestayId(int id);
+
+    @Query("select h from HomestayAvailableDate h where h.homestay.id = :id")
+    List<HomestayAvailableDate> findHomestayAvailableDateByHomestayId(int id);
 }

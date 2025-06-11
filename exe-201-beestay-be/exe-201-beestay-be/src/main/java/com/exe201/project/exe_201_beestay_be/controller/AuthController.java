@@ -3,9 +3,11 @@ package com.exe201.project.exe_201_beestay_be.controller;
 import com.exe201.project.exe_201_beestay_be.dto.requests.LoginRequest;
 import com.exe201.project.exe_201_beestay_be.dto.requests.VerifyOtpRequest;
 import com.exe201.project.exe_201_beestay_be.exceptions.AccountNotValidException;
+import com.exe201.project.exe_201_beestay_be.exceptions.RefreshTokenBotValidException;
 import com.exe201.project.exe_201_beestay_be.services.AccountService;
 import com.exe201.project.exe_201_beestay_be.services.EmailService;
 import com.exe201.project.exe_201_beestay_be.services.OtpService;
+import com.exe201.project.exe_201_beestay_be.services.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,8 @@ public class AuthController {
     private final OtpService otpService;
 
     private final EmailService emailService;
+
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/auth/verify")
     public ResponseEntity<?> register(@RequestParam("email") String email) {
@@ -49,6 +53,19 @@ public class AuthController {
             return ResponseEntity.ok().body(accountService.login(request.getUserName(), request.getPassword()));
         } catch (AccountNotValidException e){
             throw new AccountNotValidException("Account not valid");
+        } catch (Exception e){
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/auth/refresh-token")
+    public ResponseEntity<?> refreshToken(@RequestParam("refresh_token") String refreshToken) {
+        try{
+            return ResponseEntity.ok().body(refreshTokenService.createNewToken(refreshToken));
+        } catch (RefreshTokenBotValidException e){
+            throw new RefreshTokenBotValidException("Refresh token not valid");
+        } catch (Exception e){
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

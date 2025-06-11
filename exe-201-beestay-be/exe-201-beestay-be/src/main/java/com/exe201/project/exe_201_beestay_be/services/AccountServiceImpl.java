@@ -33,6 +33,7 @@ public class AccountServiceImpl implements AccountService{
 
     private final HostRepository hostRepository;
 
+    private final RefreshTokenService refreshTokenService;
     //Login service
     @Override
     public LoginResponse login(String userName, String password) {
@@ -48,6 +49,7 @@ public class AccountServiceImpl implements AccountService{
             loginResponse.setUserName(accountOptional.getUserName());
             loginResponse.setRole(accountOptional.getRole().toString());
             loginResponse.setToken(jwtUtil.generateToken(accountOptional.getUserName(), accountOptional.getRole()));
+            loginResponse.setRefreshToken(refreshTokenService.createRefreshToken(accountOptional));
             return loginResponse;
         }
 
