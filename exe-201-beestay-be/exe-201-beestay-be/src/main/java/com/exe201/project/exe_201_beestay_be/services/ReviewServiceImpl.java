@@ -26,9 +26,9 @@ public class ReviewServiceImpl implements ReviewService {
     private final HomestayRepository homestayRepository;
 
     @Override
-    public String addReview(StayCationReviewRequest review, int userId, int stayCationId) {
+    public String addReview(StayCationReviewRequest review, int accountId, int stayCationId) {
 
-        Optional<User> user = userRepository.findById(userId);
+        Optional<User> user = userRepository.findByAccountId(accountId);
         Optional<Homestay> homestay = homestayRepository.findById(stayCationId);
         if(user.isEmpty()) {
             throw new UserNotFoundException("user not found");

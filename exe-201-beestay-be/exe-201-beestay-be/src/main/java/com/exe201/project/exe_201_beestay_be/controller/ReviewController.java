@@ -17,10 +17,10 @@ public class ReviewController {
 
     @PostMapping("/review/add")
     public ResponseEntity<?> addReview(@RequestBody StayCationReviewRequest review,
-                                       @RequestParam("userId") int userId,
+                                       @RequestParam("accountId") int accountId,
                                        @RequestParam("stayCationId") int stayCationId) {
         try{
-            return ResponseEntity.ok().body(reviewService.addReview(review, userId, stayCationId));
+            return ResponseEntity.ok().body(reviewService.addReview(review, accountId, stayCationId));
         } catch (UserNotFoundException e) {
             throw new UserNotFoundException(e.getMessage());
         } catch (StayCationNotFoundException e) {
