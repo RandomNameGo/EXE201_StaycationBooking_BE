@@ -11,7 +11,6 @@ import java.util.List;
 @Data
 public class StayCationCreateRequest {
     private String name;
-    private int hostId;
     private int pricePerNight;
     private int originalPricePerNight;
     private int discountPercentage;

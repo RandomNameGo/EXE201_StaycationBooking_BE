@@ -12,9 +12,11 @@ public interface HomestayService {
 
     List<StayCationDetailResponse> getAllRoomDetails();
 
-    String addStayCation(StayCationCreateRequest stayCationCreateRequest);
+    String addStayCation(StayCationCreateRequest stayCationCreateRequest, int accountId);
 
     String uploadHomestayImage(List<MultipartFile> files, int homeStayId) throws IOException;
 
     String updateStayCation(int homeStayId, StayCationUpdateRequest stayCationUpdateRequest);
+
+    List<StayCationDetailResponse> getByHost(int hostAccountId);
 }
