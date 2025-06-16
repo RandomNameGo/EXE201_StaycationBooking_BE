@@ -141,7 +141,7 @@ public class HomestayServiceImpl implements HomestayService {
             homestayImage.setUrl(imgUrl);
             imageRepository.save(homestayImage);
         }
-        return "";
+        return "Uploaded Successfully";
     }
 
     @Override
@@ -248,6 +248,133 @@ public class HomestayServiceImpl implements HomestayService {
         List<StayCationDetailResponse> stayCationDetailResponses = new ArrayList<>();
         List<Homestay> homestays = homestayRepository.findHomestayByHostId(hostEntity.getId());
         return getStayCationDetailResponses(stayCationDetailResponses, homestays);
+    }
+
+    @Override
+    public String uploadStayCationVideo(MultipartFile file, int homeStayId) throws IOException {
+        if(!homestayRepository.existsById(homeStayId)){
+            throw new StayCationNotFoundException("Stay Cation Not Found");
+        }
+
+        Homestay homestay = homestayRepository.findById(homeStayId).get();
+
+        String videoUrl = cloudinaryService.uploadVideo(file);
+        homestay.setVideoTourUrl(videoUrl);
+        homestayRepository.save(homestay);
+
+        return "Uploaded Successfully";
+    }
+
+    @Override
+    public StayCationDetailResponse getStayCation(int homeStayId) {
+        Optional<Homestay> tempHomestay = homestayRepository.findById(homeStayId);
+        if(tempHomestay.isEmpty()) {
+            throw new StayCationNotFoundException("Stay Cation Not Found");
+        }
+        Homestay homestay = tempHomestay.get();
+        StayCationDetailResponse stayCationDetailResponse = new StayCationDetailResponse();
+        stayCationDetailResponse.setId(homestay.getId());
+        //name
+        stayCationDetailResponse.setName(homestay.getName());
+
+        stayCationDetailResponse.setDescription(homestay.getDescription());
+
+        stayCationDetailResponse.setAvailable(homestay.getIsAvailable());
+
+        stayCationDetailResponse.setAverageRating(homestay.getAverageRating());
+
+        stayCationDetailResponse.setVideoTourUrl(homestay.getVideoTourUrl());
+
+        stayCationDetailResponse.setBedCount(homestay.getBedCount());
+
+        stayCationDetailResponse.setBathroomCount(homestay.getBathroomCount());
+
+        stayCationDetailResponse.setPricePerNight(homestay.getPricePerNight());
+
+        stayCationDetailResponse.setOriginalPricePerNight(homestay.getOriginalPricePerNight());
+
+        stayCationDetailResponse.setFlashSale(homestay.getIsFlashSale());
+
+        stayCationDetailResponse.setDiscountPercentage(homestay.getDiscountPercentage());
+
+        stayCationDetailResponse.setRoomCount(homestay.getRoomCount());
+
+        stayCationDetailResponse.setRoomCount(stayCationDetailResponse.getRoomCount());
+
+        stayCationDetailResponse.setMaxGuests(homestay.getMaxGuests());
+
+        stayCationDetailResponse.setInstantBook(homestay.getIsInstantBook());
+
+        stayCationDetailResponse.setRecommended(homestay.getIsRecommended());
+
+        //host
+        HostResponse hostResponse = new HostResponse();
+        Host host = homestay.getHost();
+        hostResponse.setName(host.getName());
+        hostResponse.setEmail(host.getEmail());
+        hostResponse.setPhone(host.getPhone());
+        hostResponse.setRating(host.getAverageRating());
+        stayCationDetailResponse.setHost(hostResponse);
+
+        //amenity
+        AmenitiesResponse amenitiesResponse = new AmenitiesResponse();
+        HomestayAmenity homestayAmenity = amenityRepository.findByHomestayId(homestay.getId());
+        amenitiesResponse.setAirConditioner(homestayAmenity.getAirConditioner());
+        amenitiesResponse.setParking(homestayAmenity.getParking());
+        amenitiesResponse.setKitchen(homestayAmenity.getKitchen());
+        amenitiesResponse.setRoomService(homestayAmenity.getRoomService());
+        amenitiesResponse.setBalcony(homestayAmenity.getBalcony());
+        amenitiesResponse.setPool(homestayAmenity.getPool());
+        amenitiesResponse.setWifi(homestayAmenity.getWifi());
+        amenitiesResponse.setPetAllowed(homestayAmenity.getPetAllowed());
+        amenitiesResponse.setSecurityCamera(homestayAmenity.getSecurityCamera());
+        amenitiesResponse.setPrivateBathroom(homestayAmenity.getPrivateBathroom());
+        amenitiesResponse.setBbqArea(homestayAmenity.getBbqArea());
+        stayCationDetailResponse.setAmenities(amenitiesResponse);
+
+        //Policy
+        PoliciesResponse policiesResponse = new PoliciesResponse();
+        HomestayPolicy homestayPolicy = policyRepository.findByHomestayId(homestay.getId());
+        policiesResponse.setAllowPet(homestayPolicy.getAllowPet());
+        policiesResponse.setRefundable(homestayPolicy.getIsRefundable());
+        policiesResponse.setAllowSmoking(homestayPolicy.getAllowSmoking());
+        stayCationDetailResponse.setPolicies(policiesResponse);
+
+        //Location
+        LocationResponse locationResponse = new LocationResponse();
+        locationResponse.setAddress(homestay.getAddress());
+        locationResponse.setCity(homestay.getCity());
+        locationResponse.setDistrict(homestay.getDistrict());
+        locationResponse.setProvince(homestay.getProvince());
+        stayCationDetailResponse.setLocation(locationResponse);
+
+        //Distance to center
+        stayCationDetailResponse.setDistanceToCenter(homestay.getDistanceToCenter());
+
+        //Feature
+        stayCationDetailResponse.setFeatures(featureRepository.findByHomestayId(homestay.getId()));
+
+        //Image
+        stayCationDetailResponse.setImageList(imageRepository.findByHomestayId(homestay.getId()));
+
+        //Available Date
+        stayCationDetailResponse.setAvailableDates(availableDateRepository.findByHomestayId(homestay.getId()));
+
+        //Review
+        List<ReviewResponse> reviewResponses = new ArrayList<>();
+        List<Review> homestayReviews = reviewRepository.findByHomestayId(homestay.getId());
+        for (Review review : homestayReviews ){
+            ReviewResponse reviewResponse = new ReviewResponse();
+            reviewResponse.setUserId(review.getUser().getId());
+            reviewResponse.setName(review.getUser().getName());
+            reviewResponse.setComment(review.getComment());
+            reviewResponse.setRating(review.getRating());
+            reviewResponse.setDate(review.getReviewDate());
+            reviewResponses.add(reviewResponse);
+        }
+        stayCationDetailResponse.setReviews(reviewResponses);
+        stayCationDetailResponse.setReviewCount(reviewRepository.countByHomestayId(homestay.getId()));
+        return stayCationDetailResponse;
     }
 
     private List<StayCationDetailResponse> getStayCationDetailResponses(List<StayCationDetailResponse> stayCationDetailResponses, List<Homestay> homestays) {

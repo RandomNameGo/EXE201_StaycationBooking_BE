@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -27,6 +28,17 @@ public class StayCationController {
 
     }
 
+    @GetMapping("/stay-cation/{id}")
+    public ResponseEntity<?> getStayCationById(@PathVariable int id){
+        try{
+            return ResponseEntity.ok().body(homestayService.getStayCation(id));
+        } catch (StayCationNotFoundException e){
+            throw new StayCationNotFoundException(e.getMessage());
+        } catch (Exception e){
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
     @PostMapping("/stay-cation/add/{accountId}")
     public ResponseEntity<?> add(@RequestBody StayCationCreateRequest stayCationCreateRequest, @PathVariable int accountId){
         try {
@@ -36,7 +48,7 @@ public class StayCationController {
         }
     }
 
-    @PostMapping("stay-cation/add-img/{id}")
+    @PutMapping("stay-cation/add-img/{id}")
     public ResponseEntity<?> addImg(@PathVariable("id") int id, @RequestParam("image") List<MultipartFile> imageList) {
         try {
             return ResponseEntity.ok().body(homestayService.uploadHomestayImage(imageList, id));
@@ -62,6 +74,17 @@ public class StayCationController {
             return ResponseEntity.ok().body(homestayService.getByHost(accountId));
         } catch (HostNotFoundException ex){
             throw new HostNotFoundException(ex.getMessage());
+        } catch (Exception e){
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PutMapping("stay-cation/add-video/{id}")
+    public ResponseEntity<?> addVideo(@PathVariable("id") int id, @RequestParam("video") MultipartFile video){
+        try {
+            return ResponseEntity.ok().body(homestayService.uploadStayCationVideo(video, id));
+        } catch (StayCationNotFoundException e){
+            throw new StayCationNotFoundException(e.getMessage());
         } catch (Exception e){
             return ResponseEntity.internalServerError().build();
         }

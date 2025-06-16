@@ -19,4 +19,8 @@ public interface HomestayService {
     String updateStayCation(int homeStayId, StayCationUpdateRequest stayCationUpdateRequest);
 
     List<StayCationDetailResponse> getByHost(int hostAccountId);
+
+    String uploadStayCationVideo(MultipartFile file, int homeStayId) throws IOException;
+
+    StayCationDetailResponse getStayCation(int homeStayId);
 }
