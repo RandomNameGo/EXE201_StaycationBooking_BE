@@ -2,6 +2,7 @@ package com.exe201.project.exe_201_beestay_be.configurations;
 
 import com.exe201.project.exe_201_beestay_be.models.Account;
 import com.exe201.project.exe_201_beestay_be.repositories.AccountRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -57,6 +58,13 @@ public class SecurityConfig {
                         .requestMatchers("bee-stay/api/v1/auth/login").permitAll()
                         .requestMatchers("bee-stay/api/v1/auth/refresh-token").permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\": \"Unauthorized\"}");
+                        })
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
