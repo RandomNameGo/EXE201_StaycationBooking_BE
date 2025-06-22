@@ -2,7 +2,6 @@ package com.exe201.project.exe_201_beestay_be.configurations;
 
 import com.exe201.project.exe_201_beestay_be.models.Account;
 import com.exe201.project.exe_201_beestay_be.repositories.AccountRepository;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -57,7 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("bee-stay/api/v1/auth/verify").permitAll()
                         .requestMatchers("bee-stay/api/v1/auth/login").permitAll()
                         .requestMatchers("bee-stay/api/v1/auth/refresh-token").permitAll()
-                        .requestMatchers("bee-stay/api/v1/confirm-webhook").permitAll()
+                        .requestMatchers("bee-stay/api/v1/payos_transfer_handler").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

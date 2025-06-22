@@ -1,5 +1,6 @@
 package com.exe201.project.exe_201_beestay_be.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
@@ -19,15 +20,23 @@ import java.util.Map;
 public class PaymentController {
     private final PayOS payOS;
 
-    @PostMapping("/confirm-webhook")
-    public ObjectNode confirmWebhook(@RequestBody Webhook webhookBody) {
+    @PostMapping(path = "/payos_transfer_handler")
+    public ObjectNode payosTransferHandler(@RequestBody ObjectNode body)
+            throws JsonProcessingException, IllegalArgumentException {
+
+        System.out.println(body.toPrettyString());
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode response = objectMapper.createObjectNode();
+        Webhook webhookBody = objectMapper.treeToValue(body, Webhook.class);
+
         try {
-            WebhookData webhookData = payOS.verifyPaymentWebhookData(webhookBody);
-            response.set("data", objectMapper.valueToTree(webhookData));
+            // Init Response
             response.put("error", 0);
-            response.put("message", "ok");
+            response.put("message", "Webhook delivered");
+            response.set("data", null);
+
+            WebhookData data = payOS.verifyPaymentWebhookData(webhookBody);
+            System.out.println(data);
             return response;
         } catch (Exception e) {
             e.printStackTrace();
