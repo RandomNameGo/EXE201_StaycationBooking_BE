@@ -57,6 +57,7 @@ public class SecurityConfig {
                         .requestMatchers("bee-stay/api/v1/auth/verify").permitAll()
                         .requestMatchers("bee-stay/api/v1/auth/login").permitAll()
                         .requestMatchers("bee-stay/api/v1/auth/refresh-token").permitAll()
+                        .requestMatchers("bee-stay/api/v1/confirm-webhook").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
