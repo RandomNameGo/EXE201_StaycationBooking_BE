@@ -2,6 +2,7 @@ package com.exe201.project.exe_201_beestay_be.controller;
 
 import com.exe201.project.exe_201_beestay_be.dto.requests.UpdateUserDetailRequest;
 import com.exe201.project.exe_201_beestay_be.exceptions.UserNotFoundException;
+import com.exe201.project.exe_201_beestay_be.services.BookingService;
 import com.exe201.project.exe_201_beestay_be.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,8 @@ import java.io.IOException;
 @RequestMapping("/bee-stay/api/v1")
 public class UserController {
     private final UserService userService;
+
+    private final BookingService bookingService;
 
     @GetMapping("/user/{id}")
     public ResponseEntity<?> getUser(@PathVariable int id) {
@@ -51,6 +54,17 @@ public class UserController {
             return ResponseEntity.ok().body(userService.updateUserAvatar(file, accountId));
         } catch (UserNotFoundException e) {
             throw new UserNotFoundException("User not found");
+        }
+    }
+
+    @GetMapping("/user/booking")
+    public ResponseEntity<?> getUserBooking(@RequestParam int accountId) {
+        try{
+            return ResponseEntity.ok().body(bookingService.viewBookingByUser(accountId));
+        } catch (UserNotFoundException e) {
+            throw new UserNotFoundException("User not found");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 }
