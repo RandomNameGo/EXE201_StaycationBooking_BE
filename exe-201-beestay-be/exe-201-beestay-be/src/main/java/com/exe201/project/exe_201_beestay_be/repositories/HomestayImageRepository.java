@@ -11,4 +11,6 @@ public interface HomestayImageRepository extends JpaRepository<HomestayImage, In
     @Query("select h.url from HomestayImage h where h.homestay.id = :id")
     List<String> findByHomestayId(int id);
 
+    @Query("select hi from HomestayImage hi where hi.url = :url")
+    HomestayImage findByURL(String url);
 }

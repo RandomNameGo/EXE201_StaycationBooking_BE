@@ -12,4 +12,7 @@ public interface BookingService {
     String cancelBooking(Long bookingId);
 
     List<BookingResponse> viewBookingByUser(int accountId);
+
+    List<BookingResponse> viewBookingByHost(int accountId);
+
 }

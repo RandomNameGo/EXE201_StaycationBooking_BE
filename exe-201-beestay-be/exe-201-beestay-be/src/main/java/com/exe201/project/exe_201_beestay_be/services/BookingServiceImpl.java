@@ -6,9 +6,11 @@ import com.exe201.project.exe_201_beestay_be.exceptions.HostNotFoundException;
 import com.exe201.project.exe_201_beestay_be.exceptions.UserNotFoundException;
 import com.exe201.project.exe_201_beestay_be.models.Booking;
 import com.exe201.project.exe_201_beestay_be.models.Homestay;
+import com.exe201.project.exe_201_beestay_be.models.Host;
 import com.exe201.project.exe_201_beestay_be.models.User;
 import com.exe201.project.exe_201_beestay_be.repositories.BookingRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.HomestayRepository;
+import com.exe201.project.exe_201_beestay_be.repositories.HostRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,8 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
 
     private final HomestayRepository homestayRepository;
+
+    private final HostRepository hostRepository;
 
     @Override
     public String addBooking(CreateBookingRequest booking) {
@@ -79,6 +83,20 @@ public class BookingServiceImpl implements BookingService {
         }
 
         List<Booking> bookingList = bookingRepository.findByBookingByUserId(user.get().getId());
+        return getBookingResponses(bookingList);
+    }
+
+    @Override
+    public List<BookingResponse> viewBookingByHost(int accountId) {
+        Optional<Host> host = hostRepository.findByAccountId(accountId);
+        if (host.isEmpty()) {
+            throw new HostNotFoundException("User not found");
+        }
+        List<Booking> bookingList = bookingRepository.findByBookingByHostId(host.get().getId());
+        return getBookingResponses(bookingList);
+    }
+
+    private List<BookingResponse> getBookingResponses(List<Booking> bookingList) {
         List<BookingResponse> bookingResponseList = new ArrayList<>();
         for (Booking booking : bookingList) {
             BookingResponse bookingResponse = new BookingResponse();

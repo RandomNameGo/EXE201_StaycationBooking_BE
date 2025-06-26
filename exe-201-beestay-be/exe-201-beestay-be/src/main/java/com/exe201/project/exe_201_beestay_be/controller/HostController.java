@@ -3,6 +3,8 @@ package com.exe201.project.exe_201_beestay_be.controller;
 import com.exe201.project.exe_201_beestay_be.dto.requests.UpdateHostDetailRequest;
 import com.exe201.project.exe_201_beestay_be.dto.responses.HostDetailResponse;
 import com.exe201.project.exe_201_beestay_be.exceptions.HostNotFoundException;
+import com.exe201.project.exe_201_beestay_be.exceptions.UserNotFoundException;
+import com.exe201.project.exe_201_beestay_be.services.BookingService;
 import com.exe201.project.exe_201_beestay_be.services.HostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class HostController {
     private final HostService hostService;
+
+    private final BookingService bookingService;
 
     @GetMapping("/host/{id}")
     public ResponseEntity<HostDetailResponse> findById(@PathVariable int id) {
@@ -51,6 +55,17 @@ public class HostController {
         } catch (HostNotFoundException e){
             throw new HostNotFoundException(e.getMessage());
         } catch (Exception e){
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/host/booking")
+    public ResponseEntity<?> getUserBooking(@RequestParam int accountId) {
+        try{
+            return ResponseEntity.ok().body(bookingService.viewBookingByHost(accountId));
+        } catch (UserNotFoundException e) {
+            throw new HostNotFoundException("Host not found");
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }

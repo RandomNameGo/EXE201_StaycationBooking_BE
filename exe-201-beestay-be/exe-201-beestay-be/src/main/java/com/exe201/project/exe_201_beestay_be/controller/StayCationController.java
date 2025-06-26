@@ -89,4 +89,13 @@ public class StayCationController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @DeleteMapping("stay-cation/delete-img")
+    public ResponseEntity<?> deleteImg(@RequestParam("url") String url){
+        try{
+            return ResponseEntity.ok().body(homestayService.deleteImage(url));
+        } catch (Exception e){
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
 }

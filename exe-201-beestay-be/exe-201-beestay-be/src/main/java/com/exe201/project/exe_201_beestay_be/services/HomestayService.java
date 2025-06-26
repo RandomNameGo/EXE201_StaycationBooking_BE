@@ -23,4 +23,6 @@ public interface HomestayService {
     String uploadStayCationVideo(MultipartFile file, int homeStayId) throws IOException;
 
     StayCationDetailResponse getStayCation(int homeStayId);
+
+    String deleteImage(String imageURL);
 }

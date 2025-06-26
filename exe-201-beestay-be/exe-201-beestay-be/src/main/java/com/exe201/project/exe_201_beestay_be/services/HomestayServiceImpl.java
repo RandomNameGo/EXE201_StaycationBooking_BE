@@ -377,6 +377,13 @@ public class HomestayServiceImpl implements HomestayService {
         return stayCationDetailResponse;
     }
 
+    @Override
+    public String deleteImage(String imageURL) {
+        HomestayImage homestayImage = imageRepository.findByURL(imageURL);
+        imageRepository.delete(homestayImage);
+        return "Deleted Successfully";
+    }
+
     private List<StayCationDetailResponse> getStayCationDetailResponses(List<StayCationDetailResponse> stayCationDetailResponses, List<Homestay> homestays) {
         for (Homestay homestay : homestays) {
             StayCationDetailResponse stayCationDetailResponse = new StayCationDetailResponse();
