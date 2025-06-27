@@ -69,4 +69,16 @@ public class HostController {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
+
+    @PutMapping("/host/booking/check-in/{bookingId}")
+    public ResponseEntity<?> checkIn(@PathVariable long bookingId) {
+        try{
+            return ResponseEntity.ok().body(bookingService.checkInBooking(bookingId));
+        } catch (UserNotFoundException e) {
+            throw new UserNotFoundException("Booking not found");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+
+    }
 }

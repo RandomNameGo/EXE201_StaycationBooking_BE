@@ -15,4 +15,6 @@ public interface BookingService {
 
     List<BookingResponse> viewBookingByHost(int accountId);
 
+    String checkInBooking(Long bookingId);
+
 }

@@ -96,6 +96,21 @@ public class BookingServiceImpl implements BookingService {
         return getBookingResponses(bookingList);
     }
 
+    @Override
+    public String checkInBooking(Long bookingId) {
+        Optional<Booking> booking = bookingRepository.findById(bookingId);
+        if (booking.isEmpty()) {
+            throw new UserNotFoundException("Booking not found");
+        }
+        if (booking.get().getStatus().equals("CANCELLED")) {
+            return "Booking was cancelled";
+        }
+        booking.get().setStatus("CHECKED_IN");
+        bookingRepository.save(booking.get());
+        return "Check in booking successfully";
+    }
+
+
     private List<BookingResponse> getBookingResponses(List<Booking> bookingList) {
         List<BookingResponse> bookingResponseList = new ArrayList<>();
         for (Booking booking : bookingList) {

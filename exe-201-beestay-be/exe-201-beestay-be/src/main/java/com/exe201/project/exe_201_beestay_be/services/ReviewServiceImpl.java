@@ -1,11 +1,14 @@
 package com.exe201.project.exe_201_beestay_be.services;
 
 import com.exe201.project.exe_201_beestay_be.dto.requests.StayCationReviewRequest;
+import com.exe201.project.exe_201_beestay_be.exceptions.BadRequestException;
 import com.exe201.project.exe_201_beestay_be.exceptions.StayCationNotFoundException;
 import com.exe201.project.exe_201_beestay_be.exceptions.UserNotFoundException;
+import com.exe201.project.exe_201_beestay_be.models.Booking;
 import com.exe201.project.exe_201_beestay_be.models.Homestay;
 import com.exe201.project.exe_201_beestay_be.models.Review;
 import com.exe201.project.exe_201_beestay_be.models.User;
+import com.exe201.project.exe_201_beestay_be.repositories.BookingRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.HomestayRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.ReviewRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.UserRepository;
@@ -25,6 +28,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final HomestayRepository homestayRepository;
 
+    private final BookingRepository bookingRepository;
+
     @Override
     public String addReview(StayCationReviewRequest review, int accountId, int stayCationId) {
 
@@ -35,6 +40,11 @@ public class ReviewServiceImpl implements ReviewService {
         }
         if(homestay.isEmpty()) {
             throw new StayCationNotFoundException("stay cation not found");
+        }
+
+        List<Booking> bookingList = bookingRepository.findByHomestayIdAndUserId(stayCationId, user.get().getId());
+        if(bookingList.isEmpty()) {
+            throw new BadRequestException("You have not booked this stay cation yet");
         }
 
         Review reviewToAdd = new Review();
