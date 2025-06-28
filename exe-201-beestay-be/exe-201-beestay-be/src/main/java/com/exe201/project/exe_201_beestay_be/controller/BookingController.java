@@ -38,4 +38,15 @@ public class BookingController {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
+
+    @PutMapping("/booking/discard/{bookingId}")
+    public ResponseEntity<?> discardBooking(@PathVariable Long bookingId) {
+        try {
+            return ResponseEntity.ok().body(bookingService.discardBooking(bookingId));
+        } catch (UserNotFoundException e) {
+            throw new UserNotFoundException(e.getMessage());
+        } catch (Exception e){
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
 }

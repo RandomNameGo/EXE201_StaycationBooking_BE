@@ -17,4 +17,5 @@ public interface BookingService {
 
     String checkInBooking(Long bookingId);
 
+    String discardBooking(Long bookingId);
 }

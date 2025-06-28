@@ -47,6 +47,17 @@ public class BookingServiceImpl implements BookingService {
             throw new HostNotFoundException("Homestay not found");
         }
 
+        List<Booking> bookings = bookingRepository.findByHomestayId(homestay.get().getId());
+        for (Booking booking1 : bookings) {
+            if(booking1.getCheckOut().equals(booking.getCheckOut())
+                    || booking1.getCheckIn().equals(booking.getCheckIn())
+                    || booking1.getCheckOut().isAfter(booking.getCheckOut())
+                    || booking1.getCheckIn().isAfter(booking.getCheckIn())
+            ) {
+                return "Can not book this homestay in this time";
+            }
+        }
+
         Booking newBooking = new Booking();
         newBooking.setUser(user.get());
         newBooking.setHomestay(homestay.get());
@@ -108,6 +119,17 @@ public class BookingServiceImpl implements BookingService {
         booking.get().setStatus("CHECKED_IN");
         bookingRepository.save(booking.get());
         return "Check in booking successfully";
+    }
+
+    @Override
+    public String discardBooking(Long bookingId) {
+        Optional<Booking> booking = bookingRepository.findById(bookingId);
+        if (booking.isEmpty()) {
+            throw new UserNotFoundException("Booking not found");
+        }
+        booking.get().setStatus("DISCARDED");
+        bookingRepository.save(booking.get());
+        return "Cancelled Booking successfully";
     }
 
 
