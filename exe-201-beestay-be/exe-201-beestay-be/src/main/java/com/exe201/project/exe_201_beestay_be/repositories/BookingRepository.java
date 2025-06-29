@@ -9,15 +9,15 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    @Query("select b from Booking b where b.user.id = :userId")
+    @Query("select b from Booking b where b.user.id = :userId and b.status = 'BOOKED'")
     List<Booking> findByBookingByUserId(int userId);
 
-    @Query("select b from Booking b where b.homestay.host.id = :hostId")
+    @Query("select b from Booking b where b.homestay.host.id = :hostId and b.status = 'BOOKED'")
     List<Booking> findByBookingByHostId(int hostId);
 
     @Query("select b from Booking b where b.homestay.id = :homestayId and b.user.id = :userId")
     List<Booking> findByHomestayIdAndUserId(int homestayId, int userId);
 
-    @Query("select b from Booking b where b.homestay.id = :homestayId")
+    @Query("select b from Booking b where b.homestay.id = :homestayId and b.status != 'DISCARDED' and b.status != 'CANCELED'")
     List<Booking> findByHomestayId(int homestayId);
 }
