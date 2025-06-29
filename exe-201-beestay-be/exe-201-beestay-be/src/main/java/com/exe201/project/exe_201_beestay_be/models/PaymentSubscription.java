@@ -13,7 +13,7 @@ import java.time.Instant;
 @Setter
 @Entity
 @Table(name = "payment_subcription")
-public class PaymentSubcription {
+public class PaymentSubscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -49,5 +49,10 @@ public class PaymentSubcription {
     @Size(max = 100)
     @Column(name = "transaction_id", length = 100)
     private String transactionId;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "subscription_id", nullable = false)
+    private Subscription subscription;
 
 }

@@ -57,6 +57,8 @@ public class SecurityConfig {
                         .requestMatchers("bee-stay/api/v1/auth/login").permitAll()
                         .requestMatchers("bee-stay/api/v1/auth/refresh-token").permitAll()
                         .requestMatchers("bee-stay/api/v1/payos_transfer_handler").permitAll()
+                        .requestMatchers("bee-stay/api/v1/payment/success").permitAll()
+                        .requestMatchers("bee-stay/api/v1/payment/cancel").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

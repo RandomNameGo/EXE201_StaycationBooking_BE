@@ -35,4 +35,9 @@ public class HostSubscription {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "subscription_id", nullable = false)
+    private Subscription subscription;
+
 }
