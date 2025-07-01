@@ -15,7 +15,6 @@ import java.time.Instant;
 @Table(name = "payment_subcription")
 public class PaymentSubscription {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -42,7 +41,7 @@ public class PaymentSubscription {
     private Instant paymentDate;
 
     @Size(max = 50)
-    @ColumnDefault("'SUCCESS'")
+    @ColumnDefault("'PENDING'")
     @Column(name = "payment_status", length = 50)
     private String paymentStatus;
 

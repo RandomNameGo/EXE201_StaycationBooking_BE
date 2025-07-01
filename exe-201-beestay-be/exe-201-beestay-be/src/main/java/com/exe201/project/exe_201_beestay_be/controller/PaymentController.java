@@ -1,6 +1,7 @@
 package com.exe201.project.exe_201_beestay_be.controller;
 
-import com.exe201.project.exe_201_beestay_be.dto.responses.CreateHostSubscriptionRequest;
+import com.exe201.project.exe_201_beestay_be.dto.requests.CreateHostSubscriptionRequest;
+import com.exe201.project.exe_201_beestay_be.services.PaymentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -11,13 +12,14 @@ import vn.payos.PayOS;
 import vn.payos.type.*;
 
 import java.util.Date;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/bee-stay/api/v1")
 @RequiredArgsConstructor
 public class PaymentController {
     private final PayOS payOS;
+
+    private final PaymentService paymentService;
 
     @GetMapping("/payment/success")
     public ResponseEntity<?> paymentSuccess() {
@@ -38,6 +40,9 @@ public class PaymentController {
         ObjectNode response = objectMapper.createObjectNode();
         Webhook webhookBody = objectMapper.treeToValue(body, Webhook.class);
 
+        long orderCode = webhookBody.getData().getOrderCode();
+        paymentService.updatePayment(orderCode);
+
         try {
             // Init Response
             response.put("error", 0);
@@ -56,39 +61,43 @@ public class PaymentController {
         }
     }
 
-    @PostMapping(path = "/create")
-    public ObjectNode createPaymentLink(@RequestBody CreateHostSubscriptionRequest RequestBody) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode response = objectMapper.createObjectNode();
+    @PostMapping("/create-payment-link")
+    public ResponseEntity<?> createPaymentLink(@RequestBody CreateHostSubscriptionRequest requestBody) {
         try {
-            final String productName = RequestBody.getSubscriptionName();
-            final String description = RequestBody.getSubscriptionDescription();
+            final String productName = requestBody.getSubscriptionName();
+            final String description = requestBody.getSubscriptionDescription();
             final String returnUrl = "https://beestay-azgcfsfpgbdkbmgv.southeastasia-01.azurewebsites.net/bee-stay/api/v1/payment/success";
             final String cancelUrl = "https://beestay-azgcfsfpgbdkbmgv.southeastasia-01.azurewebsites.net/bee-stay/api/v1/payment/cancel";
-            final int price = RequestBody.getPrice().intValue();
-            // Gen order code
+            final int price = requestBody.getPrice().intValue();
+
             String currentTimeString = String.valueOf(new Date().getTime());
             long orderCode = Long.parseLong(currentTimeString.substring(currentTimeString.length() - 6));
 
-            ItemData item = ItemData.builder().name(productName).price(price).quantity(1).build();
 
-            PaymentData paymentData = PaymentData.builder().orderCode(orderCode).description(description).amount(price)
-                    .item(item).returnUrl(returnUrl).cancelUrl(cancelUrl).build();
+            ItemData item = ItemData.builder()
+                    .name(productName)
+                    .price(price)
+                    .quantity(1)
+                    .build();
+
+            PaymentData paymentData = PaymentData.builder()
+                    .orderCode(orderCode)
+                    .description(description)
+                    .amount(price)
+                    .item(item)
+                    .returnUrl(returnUrl)
+                    .cancelUrl(cancelUrl)
+                    .build();
 
             CheckoutResponseData data = payOS.createPaymentLink(paymentData);
 
-            response.put("error", 0);
-            response.put("message", "success");
-            response.set("data", objectMapper.valueToTree(data));
-            return response;
+            paymentService.createPayment(requestBody, orderCode);
+
+            String checkoutUrl = data.getCheckoutUrl();
+            return ResponseEntity.ok(checkoutUrl);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            response.put("error", -1);
-            response.put("message", "fail");
-            response.set("data", null);
-            return response;
-
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 }
