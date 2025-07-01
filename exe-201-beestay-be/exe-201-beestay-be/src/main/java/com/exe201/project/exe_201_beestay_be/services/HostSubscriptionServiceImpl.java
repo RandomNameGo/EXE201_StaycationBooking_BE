@@ -25,8 +25,8 @@ public class HostSubscriptionServiceImpl implements HostSubscriptionService{
     private final SubscriptionRepository subscriptionRepository;
 
     @Override
-    public void createHostSubscription(int accountId, long subscriptionId) {
-        Optional<Host> host = hostRepository.findByAccountId(accountId);
+    public void createHostSubscription(int hostId, long subscriptionId) {
+        Optional<Host> host = hostRepository.findById(hostId);
         if (host.isEmpty()) {
             throw new HostNotFoundException("Host not found");
         }
