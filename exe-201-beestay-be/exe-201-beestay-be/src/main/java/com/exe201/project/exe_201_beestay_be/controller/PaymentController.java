@@ -41,7 +41,7 @@ public class PaymentController {
         Webhook webhookBody = objectMapper.treeToValue(body, Webhook.class);
 
         long orderCode = webhookBody.getData().getOrderCode();
-        paymentService.updatePayment(orderCode);
+//        paymentService.updatePayment(orderCode);
 
         try {
             // Init Response
