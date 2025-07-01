@@ -1,6 +1,8 @@
 package com.exe201.project.exe_201_beestay_be.controller;
 
 import com.exe201.project.exe_201_beestay_be.dto.requests.CreateHostSubscriptionRequest;
+import com.exe201.project.exe_201_beestay_be.repositories.HostSubscriptionRepository;
+import com.exe201.project.exe_201_beestay_be.services.HostSubscriptionService;
 import com.exe201.project.exe_201_beestay_be.services.PaymentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +22,8 @@ public class PaymentController {
     private final PayOS payOS;
 
     private final PaymentService paymentService;
+
+    private final HostSubscriptionService hostSubscriptionService;
 
     @GetMapping("/payment/success")
     public ResponseEntity<?> paymentSuccess() {
@@ -41,15 +45,15 @@ public class PaymentController {
         Webhook webhookBody = objectMapper.treeToValue(body, Webhook.class);
 
         long orderCode = webhookBody.getData().getOrderCode();
-        paymentService.updatePayment(orderCode);
 
         try {
-            // Init Response
             response.put("error", 0);
             response.put("message", "Webhook delivered");
             response.set("data", null);
 
             WebhookData data = payOS.verifyPaymentWebhookData(webhookBody);
+            paymentService.updatePayment(orderCode);
+            paymentService.addHostSubscription(orderCode);
             System.out.println(data);
             return response;
         } catch (Exception e) {
@@ -73,6 +77,9 @@ public class PaymentController {
             String currentTimeString = String.valueOf(new Date().getTime());
             long orderCode = Long.parseLong(currentTimeString.substring(currentTimeString.length() - 6));
 
+            if(hostSubscriptionService.checkHostSubscription(requestBody.getAccountId(), requestBody.getSubscriptionId())){
+                return ResponseEntity.ok("This account already has subscription");
+            }
 
             ItemData item = ItemData.builder()
                     .name(productName)

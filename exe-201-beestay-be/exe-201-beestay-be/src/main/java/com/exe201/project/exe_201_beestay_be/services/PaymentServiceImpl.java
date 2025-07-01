@@ -26,6 +26,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final SubscriptionRepository subscriptionRepository;
 
+    private final HostSubscriptionService hostSubscriptionService;
+
     @Override
     public void createPayment(CreateHostSubscriptionRequest createHostSubscriptionRequest, long id) {
 
@@ -59,4 +61,17 @@ public class PaymentServiceImpl implements PaymentService {
         paymentSubscription.get().setPaymentStatus("SUCCESS");
         PaymentSubscriptionRepository.save(paymentSubscription.get());
     }
+
+    @Override
+    public void addHostSubscription(long id) {
+        Optional<PaymentSubscription> paymentSubscription = PaymentSubscriptionRepository.findById(id);
+        if (paymentSubscription.isEmpty()) {
+            throw new UserNotFoundException("Order not found");
+        }
+        int hostId = paymentSubscription.get().getHost().getId();
+        long subscriptionId = paymentSubscription.get().getSubscription().getId();
+
+        hostSubscriptionService.createHostSubscription(hostId, subscriptionId);
+    }
+
 }

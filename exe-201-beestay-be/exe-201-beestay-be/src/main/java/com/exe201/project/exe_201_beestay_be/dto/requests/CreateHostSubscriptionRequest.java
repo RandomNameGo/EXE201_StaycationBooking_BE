@@ -11,4 +11,6 @@ public class CreateHostSubscriptionRequest {
     private String subscriptionName;
     private String subscriptionDescription;
     private BigDecimal price;
+    private String returnUrl;
+    private String cancelUrl;
 }
