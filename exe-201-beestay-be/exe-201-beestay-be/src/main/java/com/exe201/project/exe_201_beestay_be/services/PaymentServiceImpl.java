@@ -57,5 +57,6 @@ public class PaymentServiceImpl implements PaymentService {
             throw new UserNotFoundException("Order not found");
         }
         paymentSubscription.get().setPaymentStatus("SUCCESS");
+        PaymentSubscriptionRepository.save(paymentSubscription.get());
     }
 }
