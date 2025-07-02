@@ -70,10 +70,14 @@ public class PaymentController {
         try {
             final String productName = requestBody.getSubscriptionName();
             final String description = requestBody.getSubscriptionDescription();
-            final String returnUrl = "https://beestay-azgcfsfpgbdkbmgv.southeastasia-01.azurewebsites.net/bee-stay/api/v1/payment/success";
-            final String cancelUrl = "https://beestay-azgcfsfpgbdkbmgv.southeastasia-01.azurewebsites.net/bee-stay/api/v1/payment/cancel";
-            final int price = requestBody.getPrice().intValue();
+            final String returnUrl = (requestBody.getReturnUrl() == null || requestBody.getReturnUrl().isEmpty())
+                    ? "https://beestay-azgcfsfpgbdkbmgv.southeastasia-01.azurewebsites.net/bee-stay/api/v1/payment/success"
+                    : requestBody.getReturnUrl();
 
+            final String cancelUrl = (requestBody.getCancelUrl() == null || requestBody.getCancelUrl().isEmpty())
+                    ? "https://beestay-azgcfsfpgbdkbmgv.southeastasia-01.azurewebsites.net/bee-stay/api/v1/payment/cancel"
+                    : requestBody.getCancelUrl();
+            final int price = requestBody.getPrice().intValue();
             String currentTimeString = String.valueOf(new Date().getTime());
             long orderCode = Long.parseLong(currentTimeString.substring(currentTimeString.length() - 6));
 
