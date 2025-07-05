@@ -1,19 +1,29 @@
 package com.exe201.project.exe_201_beestay_be.services;
 
+import com.exe201.project.exe_201_beestay_be.configurations.JwtUtil;
 import com.exe201.project.exe_201_beestay_be.dto.requests.UpdateHostDetailRequest;
+import com.exe201.project.exe_201_beestay_be.dto.responses.BookingResponse;
 import com.exe201.project.exe_201_beestay_be.dto.responses.HostDetailResponse;
+import com.exe201.project.exe_201_beestay_be.dto.responses.HostStayCationResponse;
 import com.exe201.project.exe_201_beestay_be.dto.responses.LocationResponse;
 import com.exe201.project.exe_201_beestay_be.exceptions.HostNotFoundException;
+import com.exe201.project.exe_201_beestay_be.exceptions.UnauthorizedException;
+import com.exe201.project.exe_201_beestay_be.models.Booking;
+import com.exe201.project.exe_201_beestay_be.models.Enums.Roles;
+import com.exe201.project.exe_201_beestay_be.models.Homestay;
 import com.exe201.project.exe_201_beestay_be.models.Host;
 import com.exe201.project.exe_201_beestay_be.models.SocialLink;
+import com.exe201.project.exe_201_beestay_be.repositories.BookingRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.HomestayRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.HostRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.SocialLinkRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.http.HttpClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +39,12 @@ public class HostServiceImpl implements HostService{
     private final SocialLinkRepository linkRepository;
 
     private final CloudinaryService cloudinaryService;
+
+    private final BookingRepository bookingRepository;
+
+    private final HttpServletRequest request;
+
+    private final JwtUtil jwtUtil;
 
     @Override
     public HostDetailResponse getHostDetail(int id) {
@@ -111,6 +127,60 @@ public class HostServiceImpl implements HostService{
         } else {
             throw new HostNotFoundException("Host not found");
         }
+    }
+
+    @Override
+    public List<HostStayCationResponse> getHostStayCation() {
+
+        String token = jwtUtil.getCurrentToken(request);
+
+        if(!jwtUtil.extractRole(token).equals(Roles.ADMIN)) {
+            throw new UnauthorizedException("Unauthorized access");
+        }
+
+        List<Host> hostList = hostRepository.findAll();
+        List<HostStayCationResponse> hostStayCationResponseList = new ArrayList<>();
+        for (Host host : hostList) {
+            HostStayCationResponse hostStayCationResponse = new HostStayCationResponse();
+            hostStayCationResponse.setId(host.getId());
+            hostStayCationResponse.setName(host.getName());
+            hostStayCationResponse.setEmail(host.getEmail());
+            hostStayCationResponse.setPhone(host.getPhone());
+            long bookingCount = bookingRepository.countByHost(host.getId());
+            hostStayCationResponse.setTotalBooking(bookingCount);
+            List<Homestay> homestayList = homestayRepository.findHomestayByHostId(host.getId());
+            List<HostStayCationResponse.StayCationResponse> stayCationResponseList = new ArrayList<>();
+            for (Homestay homestay : homestayList) {
+                HostStayCationResponse.StayCationResponse stayCationResponse = new HostStayCationResponse.StayCationResponse();
+                stayCationResponse.setId(homestay.getId());
+                stayCationResponse.setName(homestay.getName());
+                LocationResponse locationResponse = new LocationResponse();
+                locationResponse.setProvince(homestay.getProvince());
+                locationResponse.setCity(homestay.getCity());
+                locationResponse.setAddress(homestay.getAddress());
+                locationResponse.setDistrict(homestay.getDistrict());
+                stayCationResponse.setLocation(locationResponse);
+                List<Booking> bookingList = bookingRepository.findBookingByHomestayId(homestay.getId());
+                List<BookingResponse> bookingResponseList = new ArrayList<>();
+                for (Booking booking : bookingList) {
+                    BookingResponse bookingResponse = new BookingResponse();
+                    bookingResponse.setBookingId(booking.getId());
+                    bookingResponse.setFullName(booking.getFullName());
+                    bookingResponse.setPhoneNumber(booking.getPhoneNumber());
+                    bookingResponse.setCheckIn(booking.getCheckIn());
+                    bookingResponse.setCheckOut(booking.getCheckOut());
+                    bookingResponse.setHomestay(booking.getHomestay().getName());
+                    bookingResponse.setPaymentMethod(booking.getPaymentMethod());
+                    bookingResponse.setTotalPrice(booking.getTotalPrice());
+                    bookingResponseList.add(bookingResponse);
+                }
+                stayCationResponse.setBooking(bookingResponseList);
+                stayCationResponseList.add(stayCationResponse);
+            }
+            hostStayCationResponse.setResponse(stayCationResponseList);
+            hostStayCationResponseList.add(hostStayCationResponse);
+        }
+        return hostStayCationResponseList;
     }
 
     private HostDetailResponse getHostDetailResponse(HostDetailResponse hostDetailResponse, Optional<Host> host) {

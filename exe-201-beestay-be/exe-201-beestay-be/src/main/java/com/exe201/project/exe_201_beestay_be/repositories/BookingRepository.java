@@ -20,4 +20,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b from Booking b where b.homestay.id = :homestayId and b.status != 'DISCARDED' and b.status != 'CANCELED'")
     List<Booking> findByHomestayId(int homestayId);
+
+
+    @Query("select count(b) from Booking b where b.homestay.host.id = :hostId")
+    Long countByHost(int hostId);
+
+    @Query("select b from Booking b where b.homestay.id = :homestayId")
+    List<Booking> findBookingByHomestayId(int homestayId);
 }
