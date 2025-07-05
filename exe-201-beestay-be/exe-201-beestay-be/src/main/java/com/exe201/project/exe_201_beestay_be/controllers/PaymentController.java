@@ -1,7 +1,6 @@
-package com.exe201.project.exe_201_beestay_be.controller;
+package com.exe201.project.exe_201_beestay_be.controllers;
 
 import com.exe201.project.exe_201_beestay_be.dto.requests.CreateHostSubscriptionRequest;
-import com.exe201.project.exe_201_beestay_be.repositories.HostSubscriptionRepository;
 import com.exe201.project.exe_201_beestay_be.services.HostSubscriptionService;
 import com.exe201.project.exe_201_beestay_be.services.PaymentService;
 import com.fasterxml.jackson.core.JsonProcessingException;

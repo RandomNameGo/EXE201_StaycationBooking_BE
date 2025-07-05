@@ -1,4 +1,4 @@
-package com.exe201.project.exe_201_beestay_be.controller;
+package com.exe201.project.exe_201_beestay_be.controllers;
 
 import com.exe201.project.exe_201_beestay_be.dto.requests.StayCationReviewRequest;
 import com.exe201.project.exe_201_beestay_be.exceptions.BadRequestException;

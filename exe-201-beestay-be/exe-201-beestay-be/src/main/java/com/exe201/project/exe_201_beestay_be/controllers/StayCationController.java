@@ -1,4 +1,4 @@
-package com.exe201.project.exe_201_beestay_be.controller;
+package com.exe201.project.exe_201_beestay_be.controllers;
 
 import com.exe201.project.exe_201_beestay_be.dto.requests.StayCationCreateRequest;
 import com.exe201.project.exe_201_beestay_be.dto.requests.StayCationUpdateRequest;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
