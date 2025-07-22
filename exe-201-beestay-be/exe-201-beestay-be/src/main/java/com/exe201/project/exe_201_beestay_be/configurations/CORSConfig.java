@@ -13,8 +13,7 @@ public class CORSConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOriginPatterns("*")
-                        .allowedOrigins("*")
+                        .allowedOriginPatterns("*", "https://beestay-web-vite.vercel.app/")
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .exposedHeaders("*")
