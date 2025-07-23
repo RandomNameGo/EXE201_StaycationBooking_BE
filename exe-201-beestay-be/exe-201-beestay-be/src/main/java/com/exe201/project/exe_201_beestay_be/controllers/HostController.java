@@ -2,6 +2,7 @@ package com.exe201.project.exe_201_beestay_be.controllers;
 
 import com.exe201.project.exe_201_beestay_be.dto.requests.UpdateHostDetailRequest;
 import com.exe201.project.exe_201_beestay_be.dto.responses.HostDetailResponse;
+import com.exe201.project.exe_201_beestay_be.dto.responses.HostDashboardResponse;
 import com.exe201.project.exe_201_beestay_be.exceptions.HostNotFoundException;
 import com.exe201.project.exe_201_beestay_be.exceptions.UserNotFoundException;
 import com.exe201.project.exe_201_beestay_be.services.BookingService;
@@ -76,6 +77,22 @@ public class HostController {
             return ResponseEntity.ok().body(bookingService.checkInBooking(bookingId));
         } catch (UserNotFoundException e) {
             throw new UserNotFoundException("Booking not found");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+
+    }
+
+    @GetMapping("/host/dashboard")
+    public ResponseEntity<?> getHostDashboard(
+            @RequestParam int accountId,
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer year) {
+        try {
+            HostDashboardResponse dashboard = hostService.getHostDashboard(accountId, month, year);
+            return ResponseEntity.ok(dashboard);
+        } catch (HostNotFoundException e) {
+            throw new HostNotFoundException(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }

@@ -5,6 +5,7 @@ import com.exe201.project.exe_201_beestay_be.dto.requests.UpdateHostDetailReques
 import com.exe201.project.exe_201_beestay_be.dto.responses.BookingResponse;
 import com.exe201.project.exe_201_beestay_be.dto.responses.HostDetailResponse;
 import com.exe201.project.exe_201_beestay_be.dto.responses.HostStayCationResponse;
+import com.exe201.project.exe_201_beestay_be.dto.responses.HostDashboardResponse;
 import com.exe201.project.exe_201_beestay_be.dto.responses.LocationResponse;
 import com.exe201.project.exe_201_beestay_be.exceptions.HostNotFoundException;
 import com.exe201.project.exe_201_beestay_be.exceptions.UnauthorizedException;
@@ -15,6 +16,7 @@ import com.exe201.project.exe_201_beestay_be.models.Host;
 import com.exe201.project.exe_201_beestay_be.models.SocialLink;
 import com.exe201.project.exe_201_beestay_be.repositories.BookingRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.HomestayRepository;
+import com.exe201.project.exe_201_beestay_be.repositories.HomestayImageRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.HostRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.SocialLinkRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,10 +25,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.http.HttpClient;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +45,8 @@ public class HostServiceImpl implements HostService{
     private final CloudinaryService cloudinaryService;
 
     private final BookingRepository bookingRepository;
+
+    private final HomestayImageRepository homestayImageRepository;
 
     private final HttpServletRequest request;
 
@@ -225,5 +231,112 @@ public class HostServiceImpl implements HostService{
             throw new RuntimeException("Host not found");
         }
         return hostDetailResponse;
+    }
+
+    @Override
+    public HostDashboardResponse getHostDashboard(int accountId, Integer month, Integer year) {
+        if (month == null || year == null) {
+            LocalDateTime now = LocalDateTime.now();
+            month = month != null ? month : now.getMonthValue();
+            year = year != null ? year : now.getYear();
+        }
+
+        Optional<Host> host = hostRepository.findByAccountId(accountId);
+        int hostId = 0;
+        if (host.isPresent()) {
+            hostId = host.get().getId();
+        } else {
+            throw new HostNotFoundException("Host not found");
+        }
+
+        // Get host homestays
+        List<Homestay> homestays = homestayRepository.findHomestayByHostId(hostId);
+        
+        // Calculate date range for the specified month/year
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDateTime startOfMonth = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime endOfMonth = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+
+        // Get all bookings for host's homestays
+        List<Booking> allBookings = new ArrayList<>();
+        Map<Integer, Long> homestayBookingCounts = new HashMap<>();
+        
+        for (Homestay homestay : homestays) {
+            List<Booking> homestayBookings = bookingRepository.findBookingByHomestayId(homestay.getId());
+            allBookings.addAll(homestayBookings);
+            
+            // Count bookings for this homestay
+            long bookingCount = homestayBookings.stream()
+                .filter(booking -> !booking.getStatus().equals("DISCARDED") && !booking.getStatus().equals("CANCELED"))
+                .count();
+            homestayBookingCounts.put(homestay.getId(), bookingCount);
+        }
+
+        // Filter bookings for the specified period and calculate metrics
+        List<Booking> periodBookings = allBookings.stream()
+            .filter(booking -> booking.getCreatedAt() != null && 
+                    booking.getCreatedAt().isAfter(startOfMonth) && 
+                    booking.getCreatedAt().isBefore(endOfMonth))
+            .filter(booking -> !booking.getStatus().equals("DISCARDED") && !booking.getStatus().equals("CANCELED"))
+            .collect(Collectors.toList());
+
+        // Calculate total customers (unique users who made bookings)
+        Set<Integer> uniqueCustomers = periodBookings.stream()
+            .map(booking -> booking.getUser().getId())
+            .collect(Collectors.toSet());
+
+        // Calculate revenue from checked-in bookings
+        BigDecimal revenue = allBookings.stream()
+            .filter(booking -> "CHECKED_IN".equals(booking.getStatus()))
+            .map(Booking::getTotalPrice)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Get top homestays by booking count
+        List<HostDashboardResponse.TopHomestayResponse> topHomestays = homestays.stream()
+            .sorted((h1, h2) -> Long.compare(
+                homestayBookingCounts.getOrDefault(h2.getId(), 0L),
+                homestayBookingCounts.getOrDefault(h1.getId(), 0L)))
+            .limit(5) // Top 5 homestays
+            .map(homestay -> {
+                HostDashboardResponse.TopHomestayResponse topHomestay = new HostDashboardResponse.TopHomestayResponse();
+                topHomestay.setId(homestay.getId());
+                topHomestay.setName(homestay.getName());
+                
+                HostDashboardResponse.LocationResponse location = new HostDashboardResponse.LocationResponse();
+                location.setAddress(homestay.getAddress());
+                location.setDistrict(homestay.getDistrict());
+                location.setCity(homestay.getCity());
+                location.setProvince(homestay.getProvince());
+                topHomestay.setLocation(location);
+                
+                topHomestay.setAverageRating(homestay.getAverageRating());
+                topHomestay.setReviewCount(homestay.getReviewCount());
+                topHomestay.setPricePerNight(homestay.getPricePerNight());
+                
+                // Get first image for homestay
+                List<String> images = homestayImageRepository.findByHomestayId(homestay.getId());
+                topHomestay.setImage(images.isEmpty() ? "string" : images.get(0));
+                
+                topHomestay.setTotalBooking(homestayBookingCounts.getOrDefault(homestay.getId(), 0L));
+                
+                return topHomestay;
+            })
+            .collect(Collectors.toList());
+
+        // Create period response
+        HostDashboardResponse.PeriodResponse period = new HostDashboardResponse.PeriodResponse();
+        period.setMonth(month);
+        period.setYear(year);
+
+        // Build response
+        HostDashboardResponse response = new HostDashboardResponse();
+        response.setTotalCustomers(uniqueCustomers.size());
+        response.setTotalBookings(periodBookings.size());
+        response.setRevenue(revenue);
+        response.setTotalHomestays(homestays.size());
+        response.setTopHomestays(topHomestays);
+        response.setPeriod(Arrays.asList(period));
+
+        return response;
     }
 }
