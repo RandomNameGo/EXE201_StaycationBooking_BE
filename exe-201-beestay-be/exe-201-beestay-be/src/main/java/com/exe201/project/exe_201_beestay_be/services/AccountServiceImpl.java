@@ -4,6 +4,7 @@ import com.exe201.project.exe_201_beestay_be.configurations.JwtUtil;
 import com.exe201.project.exe_201_beestay_be.dto.requests.VerifyOtpRequest;
 import com.exe201.project.exe_201_beestay_be.dto.responses.LoginResponse;
 import com.exe201.project.exe_201_beestay_be.exceptions.AccountNotValidException;
+import com.exe201.project.exe_201_beestay_be.exceptions.BadRequestException;
 import com.exe201.project.exe_201_beestay_be.models.Account;
 import com.exe201.project.exe_201_beestay_be.models.Enums.Roles;
 import com.exe201.project.exe_201_beestay_be.models.Host;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -62,6 +64,13 @@ public class AccountServiceImpl implements AccountService{
         if(register.getUserName() == null || register.getUserName().isEmpty()  || register.getPassword() == null || register.getPassword().isEmpty()
                 || register.getRole() == null || register.getRole().isEmpty()) {
             throw new AccountNotValidException("Account is not valid");
+        }
+
+        List<Account> accountList = accountRepository.findAll();
+        for(Account account : accountList) {
+            if(account.getUserName().equals(register.getUserName())) {
+                throw new BadRequestException("This username is already in use");
+            }
         }
 
         Account account = new Account();
