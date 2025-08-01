@@ -297,6 +297,8 @@ public class HomestayServiceImpl implements HomestayService {
 
         stayCationDetailResponse.setDiscountPercentage(homestay.getDiscountPercentage());
 
+        stayCationDetailResponse.setRoomType(homestay.getRoomType());
+
         stayCationDetailResponse.setRoomCount(homestay.getRoomCount());
 
         stayCationDetailResponse.setRoomCount(stayCationDetailResponse.getRoomCount());
