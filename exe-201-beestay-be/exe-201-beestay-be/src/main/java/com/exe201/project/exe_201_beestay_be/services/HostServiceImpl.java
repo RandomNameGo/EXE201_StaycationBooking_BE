@@ -13,11 +13,13 @@ import com.exe201.project.exe_201_beestay_be.models.Booking;
 import com.exe201.project.exe_201_beestay_be.models.Enums.Roles;
 import com.exe201.project.exe_201_beestay_be.models.Homestay;
 import com.exe201.project.exe_201_beestay_be.models.Host;
+import com.exe201.project.exe_201_beestay_be.models.HostSubscription;
 import com.exe201.project.exe_201_beestay_be.models.SocialLink;
 import com.exe201.project.exe_201_beestay_be.repositories.BookingRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.HomestayRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.HomestayImageRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.HostRepository;
+import com.exe201.project.exe_201_beestay_be.repositories.HostSubscriptionRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.SocialLinkRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +49,8 @@ public class HostServiceImpl implements HostService{
     private final BookingRepository bookingRepository;
 
     private final HomestayImageRepository homestayImageRepository;
+
+    private final HostSubscriptionRepository hostSubscriptionRepository;
 
     private final HttpServletRequest request;
 
@@ -227,6 +231,29 @@ public class HostServiceImpl implements HostService{
             hostDetailResponse.setSocialLinks(socialLinks);
             hostDetailResponse.setStatus(host.get().getStatus());
             hostDetailResponse.setBio(host.get().getBio());
+
+            //Host Subscription
+            Optional<HostSubscription> activeSubscription = hostSubscriptionRepository.findActiveSubscriptionByHostId(host.get().getId());
+            if (activeSubscription.isPresent()) {
+                HostDetailResponse.HostSubscriptionResponse subscriptionResponse = new HostDetailResponse.HostSubscriptionResponse();
+                subscriptionResponse.setName(activeSubscription.get().getSubscription().getName());
+                subscriptionResponse.setStartDate(activeSubscription.get().getStartDate());
+                subscriptionResponse.setEndDate(activeSubscription.get().getEndDate());
+                
+                // Determine subscription status based on current date and end date
+                if (activeSubscription.get().getEndDate().isBefore(java.time.LocalDate.now())) {
+                    subscriptionResponse.setStatus("EXPIRED");
+                } else if (activeSubscription.get().getIsActive()) {
+                    subscriptionResponse.setStatus("ACTIVE");
+                } else {
+                    subscriptionResponse.setStatus("INACTIVE");
+                }
+                
+                hostDetailResponse.setSubscription(subscriptionResponse);
+            } else {
+                // No active subscription
+                hostDetailResponse.setSubscription(null);
+            }
         } else {
             throw new RuntimeException("Host not found");
         }
