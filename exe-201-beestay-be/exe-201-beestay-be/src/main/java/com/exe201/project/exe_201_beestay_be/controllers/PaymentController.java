@@ -81,7 +81,7 @@ public class PaymentController {
             long orderCode = Long.parseLong(currentTimeString.substring(currentTimeString.length() - 6));
 
             if(hostSubscriptionService.checkHostSubscription(requestBody.getAccountId(), requestBody.getSubscriptionId())){
-                return ResponseEntity.ok("This account already has subscription");
+                hostSubscriptionService.deleteHostSubscription(requestBody.getAccountId(), requestBody.getSubscriptionId());
             }
 
             ItemData item = ItemData.builder()

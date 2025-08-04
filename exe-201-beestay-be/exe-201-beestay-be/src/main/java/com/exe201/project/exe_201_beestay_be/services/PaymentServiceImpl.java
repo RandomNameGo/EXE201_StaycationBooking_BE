@@ -4,9 +4,11 @@ import com.exe201.project.exe_201_beestay_be.dto.requests.CreateHostSubscription
 import com.exe201.project.exe_201_beestay_be.exceptions.HostNotFoundException;
 import com.exe201.project.exe_201_beestay_be.exceptions.UserNotFoundException;
 import com.exe201.project.exe_201_beestay_be.models.Host;
+import com.exe201.project.exe_201_beestay_be.models.HostSubscription;
 import com.exe201.project.exe_201_beestay_be.models.PaymentSubscription;
 import com.exe201.project.exe_201_beestay_be.models.Subscription;
 import com.exe201.project.exe_201_beestay_be.repositories.HostRepository;
+import com.exe201.project.exe_201_beestay_be.repositories.HostSubscriptionRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.PaymentSubscriptionRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final SubscriptionRepository subscriptionRepository;
 
     private final HostSubscriptionService hostSubscriptionService;
+    private final HostSubscriptionRepository hostSubscriptionRepository;
 
     @Override
     public void createPayment(CreateHostSubscriptionRequest createHostSubscriptionRequest, long id) {

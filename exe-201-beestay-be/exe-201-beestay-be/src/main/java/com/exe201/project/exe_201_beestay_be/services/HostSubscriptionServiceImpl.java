@@ -59,4 +59,15 @@ public class HostSubscriptionServiceImpl implements HostSubscriptionService{
         Optional<HostSubscription> hostSubscription = hostSubscriptionRepository.findByHostIdAndSubscription(host.get().getId(), subscriptionId);
         return hostSubscription.isPresent();
     }
+
+    @Override
+    public void deleteHostSubscription(int accountId, long subscriptionId) {
+        Optional<Host> host = hostRepository.findByAccountId(accountId);
+        if (host.isEmpty()) {
+            throw new HostNotFoundException("Host not found");
+        }
+
+        Optional<HostSubscription> hostSubscription = hostSubscriptionRepository.findByHostIdAndSubscription(host.get().getId(), subscriptionId);
+        hostSubscription.ifPresent(hostSubscriptionRepository::delete);
+    }
 }

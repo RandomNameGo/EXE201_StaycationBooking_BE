@@ -8,4 +8,6 @@ public interface HostSubscriptionService {
     void createHostSubscription(int hostId, long subscriptionId);
 
     boolean checkHostSubscription(int accountId, long subscriptionId);
+
+    void deleteHostSubscription(int accountId, long subscriptionId);
 }
