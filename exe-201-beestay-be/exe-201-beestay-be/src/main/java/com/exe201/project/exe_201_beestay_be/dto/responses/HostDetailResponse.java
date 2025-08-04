@@ -26,9 +26,19 @@ public class HostDetailResponse {
     private String bio;
     private List<SocialLinksResponse> socialLinks;
 
+    private HostSubscriptionResponse subscription;
+
     @Data
     public static class SocialLinksResponse {
         private String platform;
         private String url;
+    }
+
+    @Data
+    public static class HostSubscriptionResponse {
+        private String name;
+        private LocalDate startDate;
+        private LocalDate endDate;
+        private String status;
     }
 }
