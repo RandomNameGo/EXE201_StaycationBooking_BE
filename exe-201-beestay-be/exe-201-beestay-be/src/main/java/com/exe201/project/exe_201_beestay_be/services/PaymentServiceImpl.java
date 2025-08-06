@@ -1,6 +1,7 @@
 package com.exe201.project.exe_201_beestay_be.services;
 
 import com.exe201.project.exe_201_beestay_be.dto.requests.CreateHostSubscriptionRequest;
+import com.exe201.project.exe_201_beestay_be.dto.responses.PaymentSubscriptionResponse;
 import com.exe201.project.exe_201_beestay_be.exceptions.HostNotFoundException;
 import com.exe201.project.exe_201_beestay_be.exceptions.UserNotFoundException;
 import com.exe201.project.exe_201_beestay_be.models.Host;
@@ -15,7 +16,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -75,6 +80,27 @@ public class PaymentServiceImpl implements PaymentService {
         long subscriptionId = paymentSubscription.get().getSubscription().getId();
 
         hostSubscriptionService.createHostSubscription(hostId, subscriptionId);
+    }
+
+    @Override
+    public List<PaymentSubscriptionResponse> getAllPaymentSubscriptions() {
+        List<PaymentSubscription> paymentSubscriptions = PaymentSubscriptionRepository.findAll();
+        List<PaymentSubscriptionResponse> responses = new ArrayList<>();
+        
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                .withZone(ZoneId.systemDefault());
+        
+        for (PaymentSubscription payment : paymentSubscriptions) {
+            PaymentSubscriptionResponse response = new PaymentSubscriptionResponse();
+            response.setTransactionId(payment.getId());
+            response.setFullName(payment.getHost().getName()); // host name
+            response.setTransactionName(payment.getProductName()); // productName
+            response.setTransactionValue(String.valueOf(payment.getPrice())); // price
+            response.setTransactionDate(formatter.format(payment.getPaymentDate())); // paymentDate
+            responses.add(response);
+        }
+        
+        return responses;
     }
 
 }

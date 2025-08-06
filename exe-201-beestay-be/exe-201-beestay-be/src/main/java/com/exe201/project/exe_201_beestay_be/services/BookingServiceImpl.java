@@ -2,6 +2,7 @@ package com.exe201.project.exe_201_beestay_be.services;
 
 import com.exe201.project.exe_201_beestay_be.dto.requests.CreateBookingRequest;
 import com.exe201.project.exe_201_beestay_be.dto.responses.BookingResponse;
+import com.exe201.project.exe_201_beestay_be.dto.responses.CreateBookingResponse;
 import com.exe201.project.exe_201_beestay_be.exceptions.HostNotFoundException;
 import com.exe201.project.exe_201_beestay_be.exceptions.UserNotFoundException;
 import com.exe201.project.exe_201_beestay_be.models.Booking;
@@ -33,7 +34,7 @@ public class BookingServiceImpl implements BookingService {
     private final HostRepository hostRepository;
 
     @Override
-    public String addBooking(CreateBookingRequest booking) {
+    public CreateBookingResponse addBooking(CreateBookingRequest booking) {
 
         Optional<User> user = userRepository.findByAccountId(booking.getAccountId());
 
@@ -54,7 +55,7 @@ public class BookingServiceImpl implements BookingService {
                     || booking1.getCheckOut().isAfter(booking.getCheckOut())
                     || booking1.getCheckIn().isAfter(booking.getCheckIn())
             ) {
-                return "Can not book this homestay in this time";
+                throw new RuntimeException("Can not book this homestay in this time");
             }
         }
 
@@ -69,9 +70,21 @@ public class BookingServiceImpl implements BookingService {
         newBooking.setTotalPrice(booking.getTotalPrice());
         newBooking.setCreatedAt(LocalDateTime.now());
         newBooking.setPaymentMethod(booking.getPaymentMethod());
-        bookingRepository.save(newBooking);
+        Booking savedBooking = bookingRepository.save(newBooking);
 
-        return "Book successfully";
+        // Create and return CreateBookingResponse
+        CreateBookingResponse response = new CreateBookingResponse();
+        response.setAccountId(booking.getAccountId());
+        response.setHomestayId(booking.getHomestayId());
+        response.setPhoneNumber(booking.getPhoneNumber());
+        response.setFullName(booking.getFullName());
+        response.setCheckIn(booking.getCheckIn());
+        response.setCheckOut(booking.getCheckOut());
+        response.setPaymentMethod(booking.getPaymentMethod());
+        response.setTotalPrice(booking.getTotalPrice());
+        response.setCreatedAt(savedBooking.getCreatedAt());
+
+        return response;
     }
 
     @Override
