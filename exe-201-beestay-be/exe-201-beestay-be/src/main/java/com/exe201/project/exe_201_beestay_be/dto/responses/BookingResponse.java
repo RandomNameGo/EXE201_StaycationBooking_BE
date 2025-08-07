@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Data
 public class BookingResponse {
     private long bookingId;
+    private int homestayId;
     private String homestay;
     private String phoneNumber;
     private String fullName;

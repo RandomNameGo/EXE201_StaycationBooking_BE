@@ -155,6 +155,7 @@ public class BookingServiceImpl implements BookingService {
             bookingResponse.setPhoneNumber(booking.getPhoneNumber());
             bookingResponse.setCheckIn(booking.getCheckIn());
             bookingResponse.setCheckOut(booking.getCheckOut());
+            bookingResponse.setHomestayId(booking.getHomestay().getId());
             bookingResponse.setHomestay(booking.getHomestay().getName());
             bookingResponse.setPaymentMethod(booking.getPaymentMethod());
             bookingResponse.setTotalPrice(booking.getTotalPrice());
