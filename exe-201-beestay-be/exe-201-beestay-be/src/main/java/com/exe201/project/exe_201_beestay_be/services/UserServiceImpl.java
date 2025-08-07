@@ -4,6 +4,7 @@ import com.exe201.project.exe_201_beestay_be.dto.requests.UpdateUserDetailReques
 import com.exe201.project.exe_201_beestay_be.dto.responses.UserDetailResponse;
 import com.exe201.project.exe_201_beestay_be.exceptions.UserNotFoundException;
 import com.exe201.project.exe_201_beestay_be.models.User;
+import com.exe201.project.exe_201_beestay_be.repositories.BookingRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.UserFavoriteHomestayRepository;
 import com.exe201.project.exe_201_beestay_be.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,8 @@ public class UserServiceImpl implements UserService{
     private final CloudinaryService cloudinaryService;
 
     private final UserFavoriteHomestayRepository userFavoriteHomestayRepository;
+
+    private final BookingRepository bookingRepository;
 
     @Override
     public UserDetailResponse getUserDetails(int id) {
@@ -111,8 +114,8 @@ public class UserServiceImpl implements UserService{
             userDetailResponse.setAddressResponse(addressResponse);
 
             userDetailResponse.setJoinedDate(user.get().getJoinedDate());
-            userDetailResponse.setCurrentBooking(user.get().getCurrentBooking());
-            userDetailResponse.setTotalBookingSuccess(user.get().getTotalBookingSuccess());
+            userDetailResponse.setCurrentBooking((int) (long) bookingRepository.countBookingsByUserIdAndStatusBooked(user.get().getId()));
+            userDetailResponse.setTotalBookingSuccess((int) (long) bookingRepository.countBookingsByUserId(user.get().getId()));
             userDetailResponse.setFavoriteHomestay(userFavoriteHomestayRepository.findUserFavoriteHomestayIdsByUserId(user.get().getId()));
 
             userDetailResponse.setReviewCount(user.get().getReviewCount());

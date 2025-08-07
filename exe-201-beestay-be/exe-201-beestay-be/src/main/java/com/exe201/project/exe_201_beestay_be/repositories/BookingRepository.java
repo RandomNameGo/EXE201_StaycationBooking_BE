@@ -25,6 +25,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select count(b) from Booking b where b.homestay.host.id = :hostId")
     Long countByHost(int hostId);
 
+    @Query("select count(b) from Booking b where b.user.id = :userId and b.status = 'BOOKED'")
+    Long countBookingsByUserIdAndStatusBooked(int userId);
+
+    @Query("select count(b) from Booking b where b.user.id = :userId")
+    Long countBookingsByUserId(int userId);
+
     @Query("select b from Booking b where b.homestay.id = :homestayId")
     List<Booking> findBookingByHomestayId(int homestayId);
 
@@ -43,4 +49,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b from Booking b where b.homestay.id = :homestayId and b.status = 'CHECKED_IN' and b.createdAt >= :startDate and b.createdAt <= :endDate")
     List<Booking> findCheckedInBookingsByHomestayAndDateRange(@Param("homestayId") Integer homestayId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+
 }
