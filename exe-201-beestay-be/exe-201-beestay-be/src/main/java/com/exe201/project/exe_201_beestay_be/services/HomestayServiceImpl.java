@@ -301,8 +301,6 @@ public class HomestayServiceImpl implements HomestayService {
 
         stayCationDetailResponse.setRoomCount(homestay.getRoomCount());
 
-        stayCationDetailResponse.setRoomCount(stayCationDetailResponse.getRoomCount());
-
         stayCationDetailResponse.setMaxGuests(homestay.getMaxGuests());
 
         stayCationDetailResponse.setInstantBook(homestay.getIsInstantBook());
@@ -416,7 +414,7 @@ public class HomestayServiceImpl implements HomestayService {
 
             stayCationDetailResponse.setRoomType(homestay.getRoomType());
 
-            stayCationDetailResponse.setRoomCount(stayCationDetailResponse.getRoomCount());
+            stayCationDetailResponse.setRoomCount(homestay.getRoomCount());
 
             stayCationDetailResponse.setMaxGuests(homestay.getMaxGuests());
 

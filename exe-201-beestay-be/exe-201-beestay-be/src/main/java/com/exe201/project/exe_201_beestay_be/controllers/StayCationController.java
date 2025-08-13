@@ -43,7 +43,7 @@ public class StayCationController {
         try {
             return ResponseEntity.ok().body(homestayService.addStayCation(stayCationCreateRequest, accountId));
         } catch (Exception e){
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
